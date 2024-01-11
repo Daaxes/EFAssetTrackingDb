@@ -83,32 +83,8 @@ namespace EFAssetTrackingDb
 
         public static int chkWarrenty()
         {
-            //var today = DateTime.Now;
-            //var threeMonthsFromNow = today.AddMonths(-3);
-            //var sixMonthsFromNow = today.AddMonths(-6);
-            //var warrenty = 3;
-
-            //var phonesInWarranty = Context.Phones
-            //     .Where(phones => phones.PurchaseDate.AddYears(3).AddMonths(-6) >= today)
-            //     .ToList();
-
-            //var phonesWith3MonthsWarranty = Context.Phones
-            //    .Where(phones => phones.PurchaseDate.AddYears(3).AddMonths(-6) <= today
-            //        && phones.PurchaseDate.AddYears(3).AddMonths(-6) <= today)
-            //    .ToList();
-
-            //var phonesWith6MonthsWarranty = Context.Phones
-            //    .Where(phones => phones.PurchaseDate <= today && phones.PurchaseDate.AddYears(3) <= today.AddMonths(-6) && phones.PurchaseDate.AddYears(3) >= today.AddMonths(-3))
-            //    .ToList();
-
-            // Phones purchased within the last 3 years
-
             var today = Convert.ToDateTime("2024-01-20", CultureInfo.GetCultureInfo("sv-SE"));//.ToString() //DateTime.Now.Date;
 
-            // Phones purchased within the last 3 years
-            // Phones purchased within the last 3 years
-            // Phones purchased within the last 3 years
-            // Phones purchased within the last 3 years
             var phonesInWarranty = Context.Phones
                 .Where(phone => phone.PurchaseDate.AddYears(3) >= today && phone.PurchaseDate <= today)
                 .ToList();
@@ -157,29 +133,6 @@ namespace EFAssetTrackingDb
             {
                 Console.WriteLine($"Out of warranty: {phone.Brand} {phone.Model}");
             }
-            //List<Phone> phones = new List<Phone>();
-            //phones=Context.Phones.ToList();
-
-            //foreach (var phone in phones)
-            //{
-            //    Console.WriteLine($"\nBrand: {phone.Brand.PadRight(10)} Model: {phone.Model.PadRight(18)} PurchaseDate: {phone.PurchaseDate.ToString("yyyy-MM-dd")} med 3 år{phone.PurchaseDate.AddYears(3).ToString("yyyy-MM-dd")}"); //+ 3M: 
-            //}
-
-            //foreach (var phone in phonesInWarranty)
-            //{
-            //    Console.WriteLine($"In warenty: {phone.Brand} {phone.Model}");
-            //}
-
-            //foreach (var computer in phonesWith3MonthsWarranty)
-            //{
-            //    Console.WriteLine($"3 Month left:{computer.Brand} {computer.Model}");
-            //}
-
-            //foreach (var computer in phonesWith6MonthsWarranty)
-            //{
-            //    Console.WriteLine($"6 Month left:{computer.Brand} {computer.Model}");
-            //}
-
             return 0;
         }
 
