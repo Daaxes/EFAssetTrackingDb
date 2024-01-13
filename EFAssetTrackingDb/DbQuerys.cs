@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.ConstrainedExecution;
+using System.Runtime.Serialization.DataContracts;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -81,65 +83,156 @@ namespace EFAssetTrackingDb
             return Context.Computers.Count(Computers => Computers.Id > 0);
         }
 
-        public static int chkWarrenty()
+        // Output GetWarrenty 
+        // 0: Within warrenty
+        // -1: Outoff Warrenty
+        // 1 Warrenty between 6 month left and 3 month left YELLOW
+        // 2 Warrenty 3 month left RED
+        public static int GetWarrenty(DateTime purchaseDate)
         {
-            var today = Convert.ToDateTime("2024-01-20", CultureInfo.GetCultureInfo("sv-SE"));//.ToString() //DateTime.Now.Date;
 
-            var phonesInWarranty = Context.Phones
-                .Where(phone => phone.PurchaseDate.AddYears(3) >= today && phone.PurchaseDate <= today)
-                .ToList();
+            var today = Convert.ToDateTime("2024-01-20", CultureInfo.GetCultureInfo("sv-SE"));//.ToString() //DateTime.Now.Date;
+                                                                                              //            var today = DateTime.Now.Date;
+            //ShowLine(blue, "Blue = Out of warrenty", 6, 0);
+            //ShowLine(yellow, "Yellow = Warrenty between 6 Month and 3 Month left", 7, 0);
+            //ShowLine(red, "Red = Warrenty 3 Month left", 8, 0);
+            //ShowLine(green, "Green = In Warrenty", 9, 0);
+            ////var phonesInWarranty = Context.Phones
+            //    .Where(phone => phone.PurchaseDate.AddYears(3) >= today && phone.PurchaseDate <= today)
+            //    .Count();
 
             // Phones with 3 months or less remaining in warranty
-            var phonesWith3MonthsWarranty = Context.Phones
-                .Where(phone => phone.PurchaseDate.AddYears(3).AddMonths(-3) <= today && phone.PurchaseDate.AddYears(3) > today)
-                .ToList();
+            if (purchaseDate.AddYears(3).AddMonths(-3) <= today && purchaseDate.AddYears(3) > today)
+            {
+                return 2;
+            }
+            else if (purchaseDate.AddYears(3).AddMonths(-6) <= today && purchaseDate.AddYears(3).AddMonths(-3) > today)
+            {
+                return 1;
+            }
+            else if (purchaseDate.AddYears(3) < today)
+            {
+                return -1;
+            }
 
-            // Phones with exactly 6 months remaining in warranty
-            var phonesWith6MonthsWarranty = Context.Phones
-                .Where(phone => phone.PurchaseDate.AddYears(3).AddMonths(-6) <= today && phone.PurchaseDate.AddYears(3).AddMonths(-3) > today)
-                .ToList();
+            //var phonesWith3MonthsWarranty = Context.Phones
+            //    .Where(phone => phone.PurchaseDate.AddYears(3).AddMonths(-3) <= today && phone.PurchaseDate.AddYears(3) > today)
+            //    .ToList();
 
-            // Phones without warranty
-            var phonesWithoutWarranty = Context.Phones
-                .Where(phone => phone.PurchaseDate.AddYears(3) < today)
-                .ToList();
+            //// Phones with exactly 6 months remaining in warranty
+            //var phonesWith6MonthsWarranty = Context.Phones
+            //    .Where(phone => phone.PurchaseDate.AddYears(3).AddMonths(-6) <= today && phone.PurchaseDate.AddYears(3).AddMonths(-3) > today)
+            //    .ToList();
 
-            // Print all phones
+            //// Phones without warranty
+            //var phonesWithoutWarranty = Context.Phones
+            //    .Where(phone => phone.PurchaseDate.AddYears(3) < today)
+            //    .ToList();
+
+
+            return 0;
+        }
+
+        // CountWarrentyYellow = warrenty between 3 to 6 month
+        // input if 0 Phone
+        // input if 1 Computer
+        public static int CountWarrentyYellow(int computerOrPhone)
+        {
+            var today = DateTime.Now.Date;
+
+            if (computerOrPhone == 0)
+            {
+                return Context.Phones
+                    .Where(phone => phone.PurchaseDate.AddYears(3).AddMonths(-6) <= today && phone.PurchaseDate.AddYears(3).AddMonths(-3) > today)
+                    .Count();
+            }
+            else
+            {
+                return Context.Computers
+                    .Where(computer => computer.PurchaseDate.AddYears(3).AddMonths(-6) <= today && computer.PurchaseDate.AddYears(3).AddMonths(-3) > today)
+                    .Count();
+            }
+        }
+
+        // CountWarrentyRed = warrenty 3 month left
+        // input if 0 Phone
+        // input if 1 Computer
+        public static int CountWarrentyRed(int computerOrPhone)
+        {
+            var today = DateTime.Now.Date;
+
+            if (computerOrPhone == 0)
+            {
+                return Context.Phones
+                    .Where(phone => phone.PurchaseDate.AddYears(3).AddMonths(-3) <= today && phone.PurchaseDate.AddYears(3) > today)
+                    .Count();
+
+            }
+            else
+            {
+                return Context.Computers
+                    .Where(computer => computer.PurchaseDate.AddYears(3).AddMonths(-3) <= today && computer.PurchaseDate.AddYears(3) > today)
+                    .Count();
+            }
+        }
+
+        // CountWarrentyBlue = Phones without warranty
+        // input if 0 Phone
+        // input if 1 Computer
+        // CountWarrentyBlue = Without warrenty
+        public static int CountWarrentyBlue(int computerOrPhone)
+        {
+            var today = DateTime.Now.Date;
+
+            if (computerOrPhone == 0)
+            {
+                return Context.Phones
+                    .Where(phone => phone.PurchaseDate.AddYears(3) < today)
+                    .Count();
+
+            }
+            else
+            {
+                return Context.Computers
+                    .Where(computer => computer.PurchaseDate.AddYears(3) < today)
+                    .Count();
+            }
+        }
+
+        public static int  CombinePhoneAndComputerToAsset()
+        {
             List<Phone> phones = Context.Phones.ToList();
+            List<Computer> computers = Context.Computers.ToList();
+            List<Asset> assets = new List<Asset>();
+            Display display1 = new Display();
+
             foreach (var phone in phones)
             {
-                Console.WriteLine($"\nBrand: {phone.Brand.PadRight(10)} Model: {phone.Model.PadRight(18)} PurchaseDate: {phone.PurchaseDate.ToString("yyyy-MM-dd")} med 3 år {phone.PurchaseDate.AddYears(3).ToString("yyyy-MM-dd")}");
+                int warrenty = GetWarrenty(phone.PurchaseDate);
+                assets.Add(new Asset(warrenty, "Phone", phone.Id, phone.Brand, phone.Model, phone.Type, phone.PurchaseDate, phone.Price));
             }
 
-            // Print phones in warranty
-            foreach (var phone in phonesInWarranty)
+            foreach (var computer in computers)
             {
-                Console.WriteLine($"In warranty: {phone.Brand} {phone.Model}");
+                int warrenty = GetWarrenty(computer.PurchaseDate);
+                assets.Add(new Asset(warrenty, "Computer", computer.Id, computer.Brand, computer.Model, computer.Type, computer.PurchaseDate, computer.Price));
             }
 
-            // Print phones with 3 months or less remaining in warranty
-            foreach (var phone in phonesWith3MonthsWarranty)
-            {
-                Console.WriteLine($"3 Months left: {phone.Brand} {phone.Model}");
-            }
+            int row = display1.ShowAssets(assets);
 
-            // Print phones with between 6 and 3 months remaining in warranty
-            foreach (var phone in phonesWith6MonthsWarranty)
-            {
-                Console.WriteLine($"6 Months left: {phone.Brand} {phone.Model}");
-            }
-
-            foreach (var phone in phonesWithoutWarranty)
-            {
-                Console.WriteLine($"Out of warranty: {phone.Brand} {phone.Model}");
-            }
-            return 0;
+            return row;
         }
 
         // returns the amount of Computers
         public static int getnumberofPhonesIndb()
         {
             return Context.Phones.Count(Phones => Phones.Id > 0);
+        }
+
+        public static void insertdataindb()
+        {
+        Display display = new Display();
+        display.showMenuIsertToDb(0, 6);
         }
 
     }
