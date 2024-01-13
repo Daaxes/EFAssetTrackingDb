@@ -199,28 +199,27 @@ namespace EFAssetTrackingDb
             }
         }
 
-        public static int  CombinePhoneAndComputerToAsset()
+        public static void CombinePhoneAndComputerToAsset()
         {
-            List<Phone> phones = Context.Phones.ToList();
-            List<Computer> computers = Context.Computers.ToList();
-            List<Asset> assets = new List<Asset>();
-            Display display1 = new Display();
+            List<Phone> phoneList = Context.Phones.ToList();
+            List<Computer> computerList = Context.Computers.ToList();
+            List<Asset> assetList = new List<Asset>();
+            List<Display> displayList = new List<Display>();
+            Display display = new Display();
 
-            foreach (var phone in phones)
+            foreach (var phone in phoneList)
             {
                 int warrenty = GetWarrenty(phone.PurchaseDate);
-                assets.Add(new Asset(warrenty, "Phone", phone.Id, phone.Brand, phone.Model, phone.Type, phone.PurchaseDate, phone.Price));
+                assetList.Add(new Asset(warrenty, "Phone", phone.Id, phone.Brand, phone.Model, phone.Type, phone.PurchaseDate, phone.Price));
             }
 
-            foreach (var computer in computers)
+            foreach (var computer in computerList)
             {
                 int warrenty = GetWarrenty(computer.PurchaseDate);
-                assets.Add(new Asset(warrenty, "Computer", computer.Id, computer.Brand, computer.Model, computer.Type, computer.PurchaseDate, computer.Price));
+                assetList.Add(new Asset(warrenty, "Computer", computer.Id, computer.Brand, computer.Model, computer.Type, computer.PurchaseDate, computer.Price));
             }
 
-            int row = display1.ShowAssets(assets);
-
-            return row;
+            displayList = display.CollectAssetInfo(assetList);
         }
 
         // returns the amount of Computers
