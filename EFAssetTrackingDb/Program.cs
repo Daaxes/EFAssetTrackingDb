@@ -44,11 +44,11 @@ void CollectInsertToDB()
             display.WriteBackground();
             break;
         case "1":
-            display.ShowMenuIsertToDb(Display.yellow, "Computer", 0, 6);
+            display.ShowMenuIsertToDb(display.yellow, "Computer", 0, 6);
             InsertDataInDb();
             break;
         case "2":
-            display.ShowMenuIsertToDb(Display.yellow, "Phone", 0, 6);
+            display.ShowMenuIsertToDb(display.yellow, "Phone", 0, 6);
             break;
         case "Q":
 
@@ -106,6 +106,7 @@ void CollectInsertToDB()
     }
     void InsertDataInDb()
     {
+        string[]  oneOffice = new String[3];
         while (true)
         {
             string brand = InputValue(display.PosX3 + 21, display.PosY3 + 1, 0);
@@ -115,7 +116,10 @@ void CollectInsertToDB()
             string purchaseDate = InputValue(display.PosX3 + 21, display.PosY3 + 5, 2);
             List<Office> offices = DbQuerys.getOfficesFromDb();
             display.ShowOffices(offices);
-            string office = InputValue(display.PosX3 + 21, display.PosY3 + 6, 1);
+            int office = Int32.Parse(InputValue(display.PosX3 + 21, display.PosY3 + 6, 1));
+//            var oneOffice = offices.Select(o => o.Id == office).Select(o => o.).ToArray();
+            oneOffice = offices.Select(o => new { o.Id, o.OfficeName, o.OfficeCountry }).Where(o => o.Id == office).ToArray();
+            display.PrintOutputPos(display.yellow, $"{oneOffice:2} {oneOffice[2]}", display.PosX3 + 21, display.PosY3 + 6);
             //try 
             //{
             //    int price = Int32.Parse(InputValue(display.PosX3 + 21, display.PosY3 + 4));

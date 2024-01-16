@@ -237,7 +237,7 @@ namespace EFAssetTrackingDb
             return Context.Phones.Count(Phones => Phones.Id > 0);
         }
 
-
+        public string getOfficeArrayFromList
         public static void deletedataindb()
         {
             Display display = new Display();

@@ -13,13 +13,13 @@ namespace EFAssetTrackingDb
         public int PosY { get; set; }
         public ConsoleColor MenuColor { get; set; }
 
-        public const ConsoleColor darkYelloe = ConsoleColor.DarkYellow;
-        public const ConsoleColor red = ConsoleColor.Red;
-        public const ConsoleColor green = ConsoleColor.Green;
-        public const ConsoleColor blue = ConsoleColor.Blue;
-        public const ConsoleColor yellow = ConsoleColor.Yellow;
-        public const ConsoleColor black = ConsoleColor.Black;
-        public const ConsoleColor white = ConsoleColor.White;
+        public readonly ConsoleColor darkYelloe = ConsoleColor.DarkYellow;
+        public readonly ConsoleColor red = ConsoleColor.Red;
+        public readonly ConsoleColor green = ConsoleColor.Green;
+        public readonly ConsoleColor blue = ConsoleColor.Blue;
+        public readonly ConsoleColor yellow = ConsoleColor.Yellow;
+        public readonly ConsoleColor black = ConsoleColor.Black;
+        public readonly ConsoleColor white = ConsoleColor.White;
 
         // variables for writing background Position X
         public readonly int PosX1 = 0;
