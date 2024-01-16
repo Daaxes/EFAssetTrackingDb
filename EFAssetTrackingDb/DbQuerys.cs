@@ -15,6 +15,8 @@ namespace EFAssetTrackingDb
     internal class DbQuerys
     {
         private static MyDbContext Context = new MyDbContext();
+        private static List<Computer> ComputerList = new List<Computer>();
+        private static List<Phone> PhoneList = new List<Phone>();
 
         //public static bool updateDb(List<Car> cars)
         //{
@@ -68,6 +70,13 @@ namespace EFAssetTrackingDb
             return Context.Offices.Count(Office => Office.Id > 0);
         }
 
+        // Returns offices
+        public static List<Office> getOfficesFromDb()
+        {
+            //            List<Office> list = new List<Office>();
+            return Context.Offices.ToList();
+        }
+
         // returns the amount of countrys for hq and office
         public static int getnumberofUniqCountryIndb()
         {
@@ -93,13 +102,13 @@ namespace EFAssetTrackingDb
 
             var today = Convert.ToDateTime("2024-01-20", CultureInfo.GetCultureInfo("sv-SE"));//.ToString() //DateTime.Now.Date;
                                                                                               //            var today = DateTime.Now.Date;
-            //ShowLine(blue, "Blue = Out of warrenty", 6, 0);
-            //ShowLine(yellow, "Yellow = Warrenty between 6 Month and 3 Month left", 7, 0);
-            //ShowLine(red, "Red = Warrenty 3 Month left", 8, 0);
-            //ShowLine(green, "Green = In Warrenty", 9, 0);
-            ////var phonesInWarranty = Context.Phones
-            //    .Where(phone => phone.PurchaseDate.AddYears(3) >= today && phone.PurchaseDate <= today)
-            //    .Count();
+                                                                                              //ShowLine(blue, "Blue = Out of warrenty", 6, 0);
+                                                                                              //ShowLine(yellow, "Yellow = Warrenty between 6 Month and 3 Month left", 7, 0);
+                                                                                              //ShowLine(red, "Red = Warrenty 3 Month left", 8, 0);
+                                                                                              //ShowLine(green, "Green = In Warrenty", 9, 0);
+                                                                                              ////var phonesInWarranty = Context.Phones
+                                                                                              //    .Where(phone => phone.PurchaseDate.AddYears(3) >= today && phone.PurchaseDate <= today)
+                                                                                              //    .Count();
 
             // Phones with 3 months or less remaining in warranty
             if (purchaseDate.AddYears(3).AddMonths(-3) <= today && purchaseDate.AddYears(3) > today)
@@ -189,7 +198,6 @@ namespace EFAssetTrackingDb
                 return Context.Phones
                     .Where(phone => phone.PurchaseDate.AddYears(3) < today)
                     .Count();
-
             }
             else
             {
@@ -201,25 +209,26 @@ namespace EFAssetTrackingDb
 
         public static void CombinePhoneAndComputerToAsset()
         {
-            List<Phone> phoneList = Context.Phones.ToList();
-            List<Computer> computerList = Context.Computers.ToList();
+            PhoneList = Context.Phones.ToList();
+            ComputerList = Context.Computers.ToList();
             List<Asset> assetList = new List<Asset>();
             List<Display> displayList = new List<Display>();
             Display display = new Display();
 
-            foreach (var phone in phoneList)
+            foreach (var phone in PhoneList)
             {
                 int warrenty = GetWarrenty(phone.PurchaseDate);
                 assetList.Add(new Asset(warrenty, "Phone", phone.Id, phone.Brand, phone.Model, phone.Type, phone.PurchaseDate, phone.Price));
             }
 
-            foreach (var computer in computerList)
+            foreach (var computer in ComputerList)
             {
                 int warrenty = GetWarrenty(computer.PurchaseDate);
                 assetList.Add(new Asset(warrenty, "Computer", computer.Id, computer.Brand, computer.Model, computer.Type, computer.PurchaseDate, computer.Price));
             }
 
             displayList = display.CollectAssetInfo(assetList);
+            display.PrintoutAssets(displayList);
         }
 
         // returns the amount of Computers
@@ -228,11 +237,10 @@ namespace EFAssetTrackingDb
             return Context.Phones.Count(Phones => Phones.Id > 0);
         }
 
-        public static void insertdataindb()
-        {
-        Display display = new Display();
-        display.showMenuIsertToDb(0, 6);
-        }
 
+        public static void deletedataindb()
+        {
+            Display display = new Display();
+        }
     }
 }
