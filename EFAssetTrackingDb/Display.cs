@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Azure;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,8 +26,8 @@ namespace EFAssetTrackingDb
         // variables for writing background Position X
         public readonly int PosX1 = 0;
         public readonly int PosX2 = 24;
-        public readonly int PosX3 = 50;
-        public readonly int PosX4 = 85;
+        public readonly int PosX3 = 47;
+        public readonly int PosX4 = 88;
         public readonly int PosX5 = 119;
 
         // variables for writing background Position Y
@@ -36,6 +38,8 @@ namespace EFAssetTrackingDb
         public readonly int PosY5 = 14;
         public readonly int PosY6 = 16;
         public readonly int PosY7 = 29;
+        
+        const int milliseconds = 2000;
 
         List<Display> StoreOutputList = new List<Display>();
 
@@ -49,124 +53,6 @@ namespace EFAssetTrackingDb
             OutputString = outputString;
             //PosX = posX;
             //PosY = posY;
-        }
-
-        // Printout errormessages
-        public void ShowErrorMessages(string error, int posX, int posY, bool show)
-        {
-            if (show)
-            {
-                ConsoleColor currentFGColor = Console.ForegroundColor;
-                Console.BackgroundColor = red;
-                Console.ForegroundColor = white;
-                SetCursurPos(posX, posY);
-                Console.WriteLine(error);
-                Console.ResetColor();
-                Console.ForegroundColor = currentFGColor;
-            }
-            else
-            {
-
-                ClearOutputScreenFromPosX(posX, posY, error.Length);
-            }
-        }
-        //private void InitStoreOutputList()
-        //{
-        //    StoreOutputList.Clear();
-        //}
-
-        // Method to clear a specific line on the console
-        public void ClearLine(int posX, int posY)
-        {
-            Console.SetCursorPosition(posX, posY);
-            Console.Write(new String(' ', Console.BufferWidth));
-        }
-        // Method to clear the entire console screen
-        public void ClearOutputOnScreen()
-        {
-            Console.Clear();
-        }
-        // Method to clear specified lines on the console
-        public void ClearOutputScreenFromPosY(int posY, int lines = 28)
-        {
-            for (int i = posY; i < lines + 1 + posY; i++)
-            {
-                ClearLine(0, i);
-            }
-        }
-        public void ClearOutputScreenFromPosX(int posX, int posY, int lines = 129)
-        {
-            SetCursurPos(posX, posY);
-            for (int i = 0; i < lines; i++)
-            {
-                Console.Write(" ");
-            }
-        }
-
-        //// Method to clear specified lines on the console
-        //public void ClearOutputScreenFromPosX(int posX, int posY, int lines = 128)
-        //{
-        //    for (int i = posX; i < lines + 1 + posX; i++)
-        //    {
-        //        ClearLine(i, posY);
-        //    }
-        //}
-
-        public void ClearMenu()
-        {
-            for (int y = PosY3; y < PosY4 - 1; y++)
-            {
-                for (int x = PosX1 + 1; x < PosX2 - 1; x++)
-                {
-                    PrintOutputPos(black, " ", x, y);
-                }
-            }
-        }
-
-        public void ClearSubMenu()
-        {
-            for (int y = PosY3 + 1; y < PosY4 - 1; y++)
-            {
-                for (int x = PosX2 + 1; x < PosX3 - 1; x++)
-                {
-                    PrintOutputPos(black, " ", x, y);
-                }
-            }
-        }
-
-        public void ClearOutputScreen()
-        {
-            for (int y = PosY6 + 1; y < PosY7 - 1; y++)
-            {
-                for (int x = PosX1 + 1; x < PosX5 - 1; x++)
-                {
-                    PrintOutputPos(black, " ", x, y);
-                }
-            }
-        }
-
-        public void ClearInfoMenuTitle()
-        {
-            for (int x = PosX3 + 1; x < PosX5 - 1; x++)
-            {
-                PrintOutputPos(black, " ", x, PosY3 + 1);
-            }
-        }
-        public void ClearInfoMenu()
-        {
-            for (int y = PosY3 + 1; y < PosY4 - 1; y++)
-            {
-                for (int x = PosX3 + 1; x < PosX4 - 1; x++)
-                {
-                    PrintOutputPos(black, " ", x, y);
-                }
-            }
-        }
-
-        // Metods for set the positions
-        public void SetCursurPos(int posX, int posY)
-        {
-            Console.SetCursorPosition(posX, posY);
         }
 
         // Write the whole background
@@ -238,6 +124,114 @@ namespace EFAssetTrackingDb
             PrintOutputPos(green, "Output window", 53, PosY5 + 1);
 
         }
+
+        // Printout errormessages
+        public void ShowErrorMessages(string error, int posX, int posY, bool show)
+        {
+            if (show)
+            {
+                ConsoleColor currentFGColor = Console.ForegroundColor;
+                Console.BackgroundColor = red;
+                Console.ForegroundColor = white;
+                SetCursurPos(posX, posY);
+                Console.WriteLine(error);
+                Console.ResetColor();
+                Console.ForegroundColor = currentFGColor;
+            }
+            else
+            {
+
+                ClearOutputScreenFromPosX(posX, posY, error.Length);
+            }
+        }
+ 
+        // Method to clear a specific line on the console
+        public void ClearLine(int posX, int posY)
+        {
+            Console.SetCursorPosition(posX, posY);
+            Console.Write(new String(' ', Console.BufferWidth));
+        }
+
+        // Method to clear the entire console screen
+        public void ClearOutputOnScreen()
+        {
+            Console.Clear();
+        }
+
+        // Method to clear specified lines on the console
+        public void ClearOutputScreenFromPosY(int posY, int lines = 28)
+        {
+            for (int i = posY; i < lines + 1 + posY; i++)
+            {
+                ClearLine(0, i);
+            }
+        }
+        public void ClearOutputScreenFromPosX(int posX, int posY, int lines = 129)
+        {
+            SetCursurPos(posX, posY);
+            for (int i = 0; i < lines; i++)
+            {
+                Console.Write(" ");
+            }
+        }
+
+         public void ClearMenu()
+        {
+            for (int y = PosY3; y < PosY4 - 1; y++)
+            {
+                for (int x = PosX1 + 1; x < PosX2 - 1; x++)
+                {
+                    PrintOutputPos(black, " ", x, y);
+                }
+            }
+        }
+
+        public void ClearSubMenu()
+        {
+            for (int y = PosY3 + 1; y < PosY5 - 1; y++)
+            {
+                for (int x = PosX3 + 1; x < PosX4 - 1; x++)
+                {
+                    PrintOutputPos(black, " ", x, y);
+                }
+            }
+        }
+
+        public void ClearOutputScreen()
+        {
+            for (int y = PosY6 + 1; y < PosY7; y++)
+            {
+                for (int x = PosX1 + 1; x < PosX5 - 1; x++)
+                {
+                    PrintOutputPos(black, " ", x, y);
+                }
+            }
+        }
+
+        public void ClearInfoMenuTitle()
+        {
+            for (int x = PosX4 + 1; x < PosX5 - 1; x++)
+            {
+                PrintOutputPos(black, " ", x, PosY3 + 1);
+            }
+        }
+        public void ClearInfoMenu()
+        {
+            for (int y = PosY3 + 1; y < PosY5 - 1; y++)
+            {
+                for (int x = PosX4 + 1; x < PosX5 - 1; x++)
+                {
+                    PrintOutputPos(black, " ", x, y);
+                }
+            }
+        }
+
+        // Metods for set the positions
+        public void SetCursurPos(int posX, int posY)
+        {
+            Console.SetCursorPosition(posX, posY);
+        }
+
 
         // Method to display category information
         public void ShowHeader(int posX, int posY)
@@ -354,7 +348,7 @@ namespace EFAssetTrackingDb
         // ShowAssets
         // Input List of assets
         // return row on last written line
-        public List<Display> CollectAssetInfo(List<Asset> assets)
+        public List<Display> CombineWarrentyAssetInfo(List<Asset> assets)
         {
             //int posX = 0;
             //int posY = 6;
@@ -364,13 +358,6 @@ namespace EFAssetTrackingDb
             ClearInfoMenuTitle();
             PrintOutputPos(green, "Warrenty Info", PosX3 + 2, PosY2 + 1);
 
-            //Console.Clear();
-            //ShowHeader(0, 0);
-            //ShowLine(blue, "Blue = Out of warrenty", posX, posY + 1);
-            //ShowLine(yellow, "Yellow = Warrenty between 6 Month and 3 Month left", posX, posY + 2);
-            //ShowLine(red, "Red = Warrenty 3 Month left", posX, posY + 3);
-            //ShowLine(green, "Green = In Warrenty", posX, posY + 4);
-            //            int count = posY + 6;
             foreach (var asset in assets)
             {
                 switch (asset.Warrenty)
@@ -400,16 +387,50 @@ namespace EFAssetTrackingDb
             return outputList;
         }
 
-        public void PrintoutAssets(List<Display> DisplayList)
+        public int ShowBrowseToNextMenu(int amountOfAssets)
+        {   
+
+            PrintOutputPos(green, $"[P] Previous [] Next [N] ", PosX1 + 1, PosY5 + 1);
+            return 0; // wrong
+        }
+
+        public void CombineAssets(List<Display> displayList, bool delete, int index)
         {
-            PrintOutputPos(green, DisplayList.Count().ToString(), PosX3 + 1, PosY3 + 1);
-            int count = 0;
-            foreach (var asset in DisplayList)
+            int countComputers = DbQuerys.getnumberofComputersIndb();
+            int countPhones = DbQuerys.getnumberofPhonesIndb();
+            int sum = countComputers + countPhones;
+            int outputMaxRow = 12;
+            int amountOfAssets = displayList.Count();
+            List<Display> tempList = new List<Display>();
+            tempList = displayList;
+ 
+            if (displayList.Count > outputMaxRow)
             {
-                PrintOutputPos(asset.MenuColor, asset.OutputString, PosX1 + 1, PosY6 + 1 + count);
+                amountOfAssets = ShowBrowseToNextMenu(amountOfAssets);
+                tempList = displayList.GetRange(0, outputMaxRow).ToList();
+                displayList.RemoveRange(0, outputMaxRow);
+                index = PrintoutAssets(tempList, delete, index);
+                Thread.Sleep(milliseconds);
+                ClearOutputScreen();
+                CombineAssets(displayList, delete, index);
+                }
+            else
+            {
+                PrintoutAssets(tempList, delete, index);
+            }
+        }
+
+        public int PrintoutAssets(List<Display> displayList, bool delete, int index)
+        {
+            int count = 1;
+
+            foreach (var asset in displayList)
+            {
+                PrintOutputPos(asset.MenuColor, $"{index}: {asset.OutputString}", PosX1 + 1, PosY6 + count);
+                index++;
                 count++;
             }
-
+            return index;
         }
         public List<Display> CreatePrintOutput(ConsoleColor menuColor, string assets, List<Display> outputList)
         {
@@ -419,7 +440,7 @@ namespace EFAssetTrackingDb
         }
 
         // Metod to insert data to db
-        public void ShowMenuIsertToDb(ConsoleColor menuColor, string computerPhone, int posX, int posY)
+        public void ShowSubMenuCollectToDb(ConsoleColor menuColor, string computerPhone)
         {
             ClearOutputScreen();//           ClearOutputScreenFromPosY(6, 28 - posY);
             ClearSubMenu();
@@ -429,20 +450,20 @@ namespace EFAssetTrackingDb
             if (computerPhone.Contains("Computer") || computerPhone.Contains("Phone"))
             {
                 PrintOutputPos(menuColor, computerPhone, PosX3 + 2, PosY2 + 1);
-                PrintOutputPos(menuColor, "Brand            : ", PosX3 + 2, PosY2 + 3);
-                PrintOutputPos(menuColor, "Model            : ", PosX3 + 2, PosY2 + 4);
-                PrintOutputPos(menuColor, "Price            : ", PosX3 + 2, PosY2 + 6);
-                PrintOutputPos(menuColor, "PurchaseDate     : " + DateTime.Now.Date.ToString("yyyy-MM-dd"), PosX3 + 2, PosY2 + 7);
-                PrintOutputPos(menuColor, "Which Office     : ", PosX3 + 2, PosY2 + 8);
+                PrintOutputPos(menuColor, "Brand         : ", PosX3 + 2, PosY2 + 3);
+                PrintOutputPos(menuColor, "Model         : ", PosX3 + 2, PosY2 + 4);
+                PrintOutputPos(menuColor, "Price (Dollar): ", PosX3 + 2, PosY2 + 6);
+                PrintOutputPos(menuColor, "PurchaseDate  : " + DateTime.Now.Date.ToString("yyyy-MM-dd"), PosX3 + 2, PosY2 + 7);
+                PrintOutputPos(menuColor, "Which Office  : ", PosX3 + 2, PosY2 + 8);
             }
 
             if (computerPhone.Contains("Computer"))
             {
-                PrintOutputPos(menuColor, "Type of Computer : ", PosX3 + 2, PosY2 + 5);
+                PrintOutputPos(menuColor, "Computer type : ", PosX3 + 2, PosY2 + 5);
             }
             else if (computerPhone.Contains("Phone"))
             {
-                PrintOutputPos(menuColor, "Type of Phone    : ", PosX3 + 2, PosY2 + 5);
+                PrintOutputPos(menuColor, "Phone type    : ", PosX3 + 2, PosY2 + 5);
             }
 
         }
@@ -451,7 +472,7 @@ namespace EFAssetTrackingDb
             int count = 1;
             foreach (Office office in offices)
             {
-                PrintOutputPos(yellow, $"{count.ToString()} = {office.OfficeName} - {office.OfficeCountry} ", PosX4 + 2, PosY3 + count);
+                PrintOutputPos(yellow, $"{count.ToString()}: {office.OfficeName} - {office.OfficeCountry} ", PosX4 + 2, PosY3 + count);
                 count++;
             }
         }

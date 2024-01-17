@@ -18,46 +18,6 @@ namespace EFAssetTrackingDb
         private static List<Computer> ComputerList = new List<Computer>();
         private static List<Phone> PhoneList = new List<Phone>();
 
-        //public static bool updateDb(List<Car> cars)
-        //{
-        //    int dbChkBefore = getNumberOfCarsInDb();
-        //    int count = 0;
-
-
-        //    foreach (Car car in cars)
-        //    {
-        //        count++;
-        //        Context.cars.Add(car);
-        //        Context.SaveChanges();
-        //    }
-
-
-        //    if (dbChkBefore + count == getNumberOfCarsInDb())
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
-
-        //private static List<Car> initCarsList(List<Car> cars)
-        //{
-        //    cars.Clear();
-        //    return cars;
-        //}
-
-        //public static List<Car> GetCarsFromDb()
-        //{
-        //    List<Car> result = new List<Car>();
-        //    result = initCarsList(result);
-        //    result = Context.cars.ToList();
-
-        //    //foreach (Car car in result)
-        //    //{
-        //    //    Console.WriteLine($"Id: {car.Id} Brand: {car.Brand} Model: {car.Model} Year: {car.Year}");
-        //    //}
-        //    return result;
-        //}
-
         // Returns the amount of headquarters
         public static int getNumberOfHQsInDb()
         {
@@ -92,6 +52,12 @@ namespace EFAssetTrackingDb
             return Context.Computers.Count(Computers => Computers.Id > 0);
         }
 
+        // returns the amount of Phones in Database
+        public static int getnumberofPhonesIndb()
+        {
+            return Context.Phones.Count(Phones => Phones.Id > 0);
+        }
+
         // Output GetWarrenty 
         // 0: Within warrenty
         // -1: Outoff Warrenty
@@ -100,16 +66,7 @@ namespace EFAssetTrackingDb
         public static int GetWarrenty(DateTime purchaseDate)
         {
 
-            var today = Convert.ToDateTime("2024-01-20", CultureInfo.GetCultureInfo("sv-SE"));//.ToString() //DateTime.Now.Date;
-                                                                                              //            var today = DateTime.Now.Date;
-                                                                                              //ShowLine(blue, "Blue = Out of warrenty", 6, 0);
-                                                                                              //ShowLine(yellow, "Yellow = Warrenty between 6 Month and 3 Month left", 7, 0);
-                                                                                              //ShowLine(red, "Red = Warrenty 3 Month left", 8, 0);
-                                                                                              //ShowLine(green, "Green = In Warrenty", 9, 0);
-                                                                                              ////var phonesInWarranty = Context.Phones
-                                                                                              //    .Where(phone => phone.PurchaseDate.AddYears(3) >= today && phone.PurchaseDate <= today)
-                                                                                              //    .Count();
-
+            var today = Convert.ToDateTime("2024-01-20", CultureInfo.GetCultureInfo("sv-SE"));
             // Phones with 3 months or less remaining in warranty
             if (purchaseDate.AddYears(3).AddMonths(-3) <= today && purchaseDate.AddYears(3) > today)
             {
@@ -123,21 +80,6 @@ namespace EFAssetTrackingDb
             {
                 return -1;
             }
-
-            //var phonesWith3MonthsWarranty = Context.Phones
-            //    .Where(phone => phone.PurchaseDate.AddYears(3).AddMonths(-3) <= today && phone.PurchaseDate.AddYears(3) > today)
-            //    .ToList();
-
-            //// Phones with exactly 6 months remaining in warranty
-            //var phonesWith6MonthsWarranty = Context.Phones
-            //    .Where(phone => phone.PurchaseDate.AddYears(3).AddMonths(-6) <= today && phone.PurchaseDate.AddYears(3).AddMonths(-3) > today)
-            //    .ToList();
-
-            //// Phones without warranty
-            //var phonesWithoutWarranty = Context.Phones
-            //    .Where(phone => phone.PurchaseDate.AddYears(3) < today)
-            //    .ToList();
-
 
             return 0;
         }
@@ -207,7 +149,7 @@ namespace EFAssetTrackingDb
             }
         }
 
-        public static void CombinePhoneAndComputerToAsset()
+        public static List<Display> CombinePhoneAndComputerToAsset()
         {
             PhoneList = Context.Phones.ToList();
             ComputerList = Context.Computers.ToList();
@@ -227,17 +169,53 @@ namespace EFAssetTrackingDb
                 assetList.Add(new Asset(warrenty, "Computer", computer.Id, computer.Brand, computer.Model, computer.Type, computer.PurchaseDate, computer.Price));
             }
 
-            displayList = display.CollectAssetInfo(assetList);
-            display.PrintoutAssets(displayList);
+            displayList = display.CombineWarrentyAssetInfo(assetList);
+            return displayList;
         }
 
-        // returns the amount of Computers
-        public static int getnumberofPhonesIndb()
+        // InsertDataToDb(int ComputerPhone, string brand, string model, string computerType, int price, DateTime date, int office)
+        // ComputerPhone 0 = Computer
+        // ComputerPhone 1 = Phone
+        public static void InsertDataToDb(int ComputerPhone, string brand, string model, string computerType, int price, DateTime date, int officeId)
         {
-            return Context.Phones.Count(Phones => Phones.Id > 0);
+            Display display = new Display();
+            const int milliseconds = 2000;
+            display.ClearInfoMenu();
+
+            if (ComputerPhone == 0) 
+            {
+                int chkNumber = getnumberofComputersIndb();
+                // Create a new Computer instance
+                Computer newComputer = new Computer(brand, model, computerType, price, date, officeId);
+
+                // Add the new Computer instance to the context
+                Context.Computers.Add(newComputer);
+                Context.SaveChanges();
+                if (chkNumber < getnumberofComputersIndb()) 
+                {
+                    display.PrintOutputPos(display.yellow, "Update succsseful", display.PosX4 + 1, display.PosY3 + 1);
+                    Thread.Sleep(milliseconds);
+                 }
+                else
+                {
+                    display.PrintOutputPos(display.yellow, "Update failed", display.PosX4 + 1, display.PosY3 + 1);
+                    Thread.Sleep(milliseconds);
+                }
+
+                display.ClearInfoMenu();
+            }
+            else if (ComputerPhone == 1) 
+            {
+                // Create a new Phone instance
+                Phone newPhone = new Phone(brand, model, computerType, price, date, officeId);
+
+                // Add the new Phone instance to the context
+                Context.Phones.Add(newPhone);
+            }
+            // Save changes to the database
+            Context.SaveChanges();
         }
 
-        public string getOfficeArrayFromList
         public static void deletedataindb()
         {
             Display display = new Display();

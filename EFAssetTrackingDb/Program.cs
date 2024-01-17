@@ -1,9 +1,11 @@
 ﻿
 using Azure;
 using EFAssetTrackingDb;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Globalization;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;
@@ -28,13 +30,14 @@ display.WriteBackground();
 
 void CollectInsertToDB()
 {
+    int done = 0;
     display.ClearInfoMenu();
+    display.ClearSubMenu();
     display.ShowInsertInToDbMenu();
     display.ShowMakeYourChoiseMenu(true);
     input.Clear();
     input.Append(Console.ReadLine());   // Read input to StringBuilder input
     display.ShowMakeYourChoiseMenu(false);
-
     switch (input.ToString())
     {
         case "0":
@@ -44,16 +47,74 @@ void CollectInsertToDB()
             display.WriteBackground();
             break;
         case "1":
-            display.ShowMenuIsertToDb(display.yellow, "Computer", 0, 6);
-            InsertDataInDb();
+            display.ShowSubMenuCollectToDb(display.yellow, "Computer");
+            done = CollectDataForDb(0);
+            if (done == 0)
+            {
+                CollectInsertToDB();
+            }
             break;
         case "2":
-            display.ShowMenuIsertToDb(display.yellow, "Phone", 0, 6);
+            display.ShowSubMenuCollectToDb(display.yellow, "Phone");
+            done = CollectDataForDb(0);
+            if (done == 0)
+            {
+                CollectInsertToDB();
+            }
             break;
         case "Q":
 
             break;
     }
+    
+}
+
+int CollectDataForDb(int computerPhone)
+{
+    int posX = display.PosX3 + 18;
+
+    while (true)
+    {
+        string brand = InputValue(posX, display.PosY3 + 1, 0);
+        string model = InputValue(posX, display.PosY3 + 2, 0);
+        string type = InputValue(posX, display.PosY3 + 3, 0);
+        int price = Int32.Parse(InputValue(posX, display.PosY3 + 4, 1));
+        DateTime purchaseDate = DateTime.Parse(InputValue(posX, display.PosY3 + 5, 2));
+        List<Office> offices = DbQuerys.getOfficesFromDb();
+        display.ShowOffices(offices);
+        int officeId = Int32.Parse(InputValue(posX, display.PosY3 + 6, 1));
+        var oneOffice = offices.FirstOrDefault(o => o.Id == officeId);
+        display.PrintOutputPos(display.yellow, $"{oneOffice.OfficeName} {oneOffice.OfficeCountry}", posX, display.PosY3 + 6);
+        display.ClearInfoMenu();
+        display.PrintOutputPos(display.yellow, "Save to Database? [Y/N] ", display.PosX3 + 2, display.PosY3 + 7);
+        input.Clear();
+        input.Append(Console.ReadLine());
+
+        if (input.ToString().ToLower() == "y")
+        {
+            DbQuerys.InsertDataToDb(computerPhone, brand, model, type, price, purchaseDate, officeId);
+            display.ClearSubMenu();
+            display.PrintOutputPos(display.yellow, "Insert more items? [Y/N] ", display.PosX3 + 2, display.PosY3 + 1);
+            input.Clear();
+            input.Append(Console.ReadLine());
+
+            if (input.ToString().ToLower() == "y")
+            {
+                return 0;
+            }
+        }
+        else if (input.ToString().ToLower() == "n" || input.ToString().ToLower() == "0")
+        {
+            input.Clear();
+            return 1;
+        }
+        else if (input.ToString().ToLower() == "q")
+        {
+        Environment.Exit(0);
+        }
+        return 0;        
+    }
+}
 
     // 0 = String
     // 1 = Integer
@@ -77,9 +138,10 @@ void CollectInsertToDB()
             catch (FormatException)
             {
                 display.ShowErrorMessages("You must write a number", posX, posY, true);
+                
                 Thread.Sleep(milliseconds);
                 display.ShowErrorMessages("You must write a number", posX, posY, false);
-                InputValue(posX, posY, 1);
+                InputValue(posX, posY, varType);
             }
         }
         else if (varType == 2 && inputStr.Length > 0)
@@ -94,7 +156,7 @@ void CollectInsertToDB()
                 display.ShowErrorMessages("You must write a Date (yyyy-MM-dd)", posX, posY, true);
                 Thread.Sleep(milliseconds);
                 display.ShowErrorMessages("You must write a Date (yyyy-MM-dd)", posX, posY, false);
-                InputValue(posX, posY, 2);
+                InputValue(posX, posY, varType);
             }
         }
         else if (varType == 2 && inputStr.Length == 0)
@@ -104,36 +166,7 @@ void CollectInsertToDB()
         return inputStr;
 
     }
-    void InsertDataInDb()
-    {
-        string[]  oneOffice = new String[3];
-        while (true)
-        {
-            string brand = InputValue(display.PosX3 + 21, display.PosY3 + 1, 0);
-            string model = InputValue(display.PosX3 + 21, display.PosY3 + 2, 0);
-            string type = InputValue(display.PosX3 + 21, display.PosY3 + 3, 0);
-            string price = InputValue(display.PosX3 + 21, display.PosY3 + 4, 1);
-            string purchaseDate = InputValue(display.PosX3 + 21, display.PosY3 + 5, 2);
-            List<Office> offices = DbQuerys.getOfficesFromDb();
-            display.ShowOffices(offices);
-            int office = Int32.Parse(InputValue(display.PosX3 + 21, display.PosY3 + 6, 1));
-//            var oneOffice = offices.Select(o => o.Id == office).Select(o => o.).ToArray();
-            oneOffice = offices.Select(o => new { o.Id, o.OfficeName, o.OfficeCountry }).Where(o => o.Id == office).ToArray();
-            display.PrintOutputPos(display.yellow, $"{oneOffice:2} {oneOffice[2]}", display.PosX3 + 21, display.PosY3 + 6);
-            //try 
-            //{
-            //    int price = Int32.Parse(InputValue(display.PosX3 + 21, display.PosY3 + 4));
-            //} catch { }
 
-            //string Model = InputValue(display.PosX3 + 21, display.PosY3 + 1);
-            //string Model = InputValue(display.PosX3 + 21, display.PosY3 + 1);
-            //            display.SetCursurPos(display.PosX3 + 21, display.PosY3 + 1);
-            input.Append(Console.ReadLine());   // Read input to StringBuilder input
-        }
-    }
-
-    //    DbQuerys.insertdataindb();
-}
 
 
 
@@ -145,7 +178,7 @@ while (true)
     display.ShowMakeYourChoiseMenu(true);
     input.Append(Console.ReadLine());   // Read input to StringBuilder input
     display.ShowMakeYourChoiseMenu(false);
-
+    List<Display> displayList = new List<Display>();
 
     switch (input.ToString())
     {
@@ -157,12 +190,19 @@ while (true)
             display.WriteBackground();
             break;
         case "1":
-            DbQuerys.CombinePhoneAndComputerToAsset();
+            displayList = DbQuerys.CombinePhoneAndComputerToAsset();
+            display.CombineAssets(displayList, false, 1);
             break;
         case "2":
             display.ClearMenu();
             display.ClearOutputScreen();
             CollectInsertToDB();
+            break;
+        case "4":
+            display.ClearMenu();
+            display.ClearOutputScreen();
+            displayList = DbQuerys.CombinePhoneAndComputerToAsset();
+            display.CombineAssets(displayList, true, 1);
             break;
 
         case "6":
