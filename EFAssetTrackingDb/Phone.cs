@@ -22,16 +22,16 @@ namespace EFAssetTrackingDb
             OfficeId = officeId;
         }
 
-        public Phone(int id, string brand, string model, int price, int officeId, DateTime purchaseDate, string type)
-        {
-            Id = id;
-            Brand = brand;
-            Model = model;
-            Price = price;
-            OfficeId = officeId;
-            PurchaseDate = purchaseDate;
-            Type = type;
-        }
+        //public Phone(int id, string brand, string model, int price, int officeId, DateTime purchaseDate, string type)
+        //{
+        //    Id = id;
+        //    Brand = brand;
+        //    Model = model;
+        //    Price = price;
+        //    OfficeId = officeId;
+        //    PurchaseDate = purchaseDate;
+        //    Type = type;
+        //}
 
         public int Id { get; set; }
         public int OfficeId { get; set; }

@@ -24,11 +24,11 @@ namespace EFAssetTrackingDb
             ModelBuilder.Entity<HQ>().HasData(new HQ { Id = 2, HQCountry = "Denmark", HQName = "Copenhagen" });
 
             // Offices
-            ModelBuilder.Entity<Office>().HasData(new Office { Id = 1, HQId = 1, OfficeName = "SveaKontoret", OfficeCountry = "Sverige" });
-            ModelBuilder.Entity<Office>().HasData(new Office { Id = 2, HQId = 2, OfficeName = "ZooKontoret", OfficeCountry = "Denmark" });
-            ModelBuilder.Entity<Office>().HasData(new Office { Id = 3, HQId = 2, OfficeName = "SisakUred", OfficeCountry = "Kroatien" });
-            ModelBuilder.Entity<Office>().HasData(new Office { Id = 4, HQId = 1, OfficeName = "OsloKontoret", OfficeCountry = "Norge" });
-            ModelBuilder.Entity<Office>().HasData(new Office { Id = 5, HQId = 1, OfficeName = "HelsinkiToimisto", OfficeCountry = "Norge" });
+            ModelBuilder.Entity<Office>().HasData(new Office { Id = 1, HQId = 1, OfficeName = "Svea Kontoret", OfficeCountry = "Sverige" });
+            ModelBuilder.Entity<Office>().HasData(new Office { Id = 2, HQId = 2, OfficeName = "Zoo Kontoret", OfficeCountry = "Denmark" });
+            ModelBuilder.Entity<Office>().HasData(new Office { Id = 3, HQId = 2, OfficeName = "Sisak Ured", OfficeCountry = "Kroatien" });
+            ModelBuilder.Entity<Office>().HasData(new Office { Id = 4, HQId = 1, OfficeName = "Oslo Kontoret", OfficeCountry = "Norge" });
+            ModelBuilder.Entity<Office>().HasData(new Office { Id = 5, HQId = 1, OfficeName = "Helsinki Toimisto", OfficeCountry = "Norge" });
 
             // Computers
             ModelBuilder.Entity<Computer>().HasData(new Computer { 

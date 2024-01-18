@@ -17,12 +17,12 @@ DbQuerys querys = new DbQuerys();
 Display display = new Display();
 
 StringBuilder input = new StringBuilder();
-//const ConsoleColor darkYelloe = ConsoleColor.DarkYellow;
-//const ConsoleColor red = ConsoleColor.Red;
-//const ConsoleColor green = ConsoleColor.Green;
-//const ConsoleColor blue = ConsoleColor.Blue;
-//const ConsoleColor yellow = ConsoleColor.Yellow;
-const int milliseconds = 2000;
+//const ConsoleColor DARKYELLOW = ConsoleColor.DarkYellow;
+//const ConsoleColor RED = ConsoleColor.Red;
+//const ConsoleColor GREEN = ConsoleColor.Green;
+//const ConsoleColor BLUE = ConsoleColor.Blue;
+//const ConsoleColor YELLOW = ConsoleColor.Yellow;
+//const int milliseconds = 2000;
 
 display.ShowHeader(0, 0); // Shows header with info about headquaters, Offices, Computers and warrenty, phones and warrenty 
 display.ShowMenu(0, 6);   // Shows menu
@@ -47,7 +47,7 @@ void CollectInsertToDB()
             display.WriteBackground();
             break;
         case "1":
-            display.ShowSubMenuCollectToDb(display.yellow, "Computer");
+            display.ShowSubMenuCollectToDb(display.YELLOW, "Computer");
             done = CollectDataForDb(0);
             if (done == 0)
             {
@@ -55,8 +55,8 @@ void CollectInsertToDB()
             }
             break;
         case "2":
-            display.ShowSubMenuCollectToDb(display.yellow, "Phone");
-            done = CollectDataForDb(0);
+            display.ShowSubMenuCollectToDb(display.YELLOW, "Phone");
+            done = CollectDataForDb(1);
             if (done == 0)
             {
                 CollectInsertToDB();
@@ -69,32 +69,35 @@ void CollectInsertToDB()
     
 }
 
+// int CollectDataForDb(int computerPhone) 
+// computerPhone 0 = Computer
+// computerPhone 1 = Phone
 int CollectDataForDb(int computerPhone)
 {
-    int posX = display.PosX3 + 18;
+    int posX = display.POSX3 + 18;
 
     while (true)
     {
-        string brand = InputValue(posX, display.PosY3 + 1, 0);
-        string model = InputValue(posX, display.PosY3 + 2, 0);
-        string type = InputValue(posX, display.PosY3 + 3, 0);
-        int price = Int32.Parse(InputValue(posX, display.PosY3 + 4, 1));
-        DateTime purchaseDate = DateTime.Parse(InputValue(posX, display.PosY3 + 5, 2));
+        string brand = InputValue(posX, display.POSY3 + 1, 0);
+        string model = InputValue(posX, display.POSY3 + 2, 0);
+        string type = InputValue(posX, display.POSY3 + 3, 0);
+        int price = Int32.Parse(InputValue(posX, display.POSY3 + 4, 1));
+        DateTime purchaseDate = DateTime.Parse(InputValue(posX, display.POSY3 + 5, 2));
         List<Office> offices = DbQuerys.getOfficesFromDb();
         display.ShowOffices(offices);
-        int officeId = Int32.Parse(InputValue(posX, display.PosY3 + 6, 1));
+        int officeId = Int32.Parse(InputValue(posX, display.POSY3 + 6, 1));
         var oneOffice = offices.FirstOrDefault(o => o.Id == officeId);
-        display.PrintOutputPos(display.yellow, $"{oneOffice.OfficeName} {oneOffice.OfficeCountry}", posX, display.PosY3 + 6);
+        display.PrintOutputPos(display.YELLOW, $"{oneOffice.OfficeName} {oneOffice.OfficeCountry}", posX, display.POSY3 + 6);
         display.ClearInfoMenu();
-        display.PrintOutputPos(display.yellow, "Save to Database? [Y/N] ", display.PosX3 + 2, display.PosY3 + 7);
+        display.PrintOutputPos(display.YELLOW, "Save to Database? [Y/N] ", display.POSX3 + 2, display.POSY3 + 7);
         input.Clear();
         input.Append(Console.ReadLine());
 
         if (input.ToString().ToLower() == "y")
         {
-            DbQuerys.InsertDataToDb(computerPhone, brand, model, type, price, purchaseDate, officeId);
+            DbQuerys.InsertDataToDb(computerPhone, brand, model, type, price, purchaseDate, officeId); 
             display.ClearSubMenu();
-            display.PrintOutputPos(display.yellow, "Insert more items? [Y/N] ", display.PosX3 + 2, display.PosY3 + 1);
+            display.PrintOutputPos(display.YELLOW, "Insert more items? [Y/N] ", display.POSX3 + 2, display.POSY3 + 1);
             input.Clear();
             input.Append(Console.ReadLine());
 
@@ -139,7 +142,7 @@ int CollectDataForDb(int computerPhone)
             {
                 display.ShowErrorMessages("You must write a number", posX, posY, true);
                 
-                Thread.Sleep(milliseconds);
+                Thread.Sleep(display.MILLISECONDS);
                 display.ShowErrorMessages("You must write a number", posX, posY, false);
                 InputValue(posX, posY, varType);
             }
@@ -154,7 +157,7 @@ int CollectDataForDb(int computerPhone)
             catch (FormatException)
             {
                 display.ShowErrorMessages("You must write a Date (yyyy-MM-dd)", posX, posY, true);
-                Thread.Sleep(milliseconds);
+                Thread.Sleep(display.MILLISECONDS);
                 display.ShowErrorMessages("You must write a Date (yyyy-MM-dd)", posX, posY, false);
                 InputValue(posX, posY, varType);
             }
@@ -166,9 +169,6 @@ int CollectDataForDb(int computerPhone)
         return inputStr;
 
     }
-
-
-
 
 while (true)
 {
@@ -183,26 +183,31 @@ while (true)
     switch (input.ToString())
     {
         case "0":
-            //            Console.Clear();
             display.ClearSubMenu();
             display.ShowHeader(0, 0);
             display.ShowMenu(0, 6);
             display.WriteBackground();
             break;
         case "1":
-            displayList = DbQuerys.CombinePhoneAndComputerToAsset();
-            display.CombineAssets(displayList, false, 1);
+            displayList = DbQuerys.CombinePhoneAndComputerToAsset(); // Compine Phone and Computer from DB to AssetList then Combine Warrenty info to a DisplayList
+            display.CombineAssets(displayList, 0, 1);   // CombineAssets(displayList, [0], 1) For READ asset from DB
             break;
         case "2":
             display.ClearMenu();
             display.ClearOutputScreen();
-            CollectInsertToDB();
+            CollectInsertToDB();                        // CollectInsertToDB() For CREATE asset to DB
+            break;
+        case "3":
+            display.ClearMenu();
+            display.ClearOutputScreen();
+            displayList = DbQuerys.CombinePhoneAndComputerToAsset(); // Compine Phone and Computer from DB to AssetList then Combine Warrenty info to a DisplayList
+            display.CombineAssets(displayList, 1, 1); // CombineAssets(displayList, [1], 1) For UPDATE asset in DB
             break;
         case "4":
             display.ClearMenu();
             display.ClearOutputScreen();
-            displayList = DbQuerys.CombinePhoneAndComputerToAsset();
-            display.CombineAssets(displayList, true, 1);
+            displayList = DbQuerys.CombinePhoneAndComputerToAsset(); // Compine Phone and Computer from DB to AssetList then Combine Warrenty info to a DisplayList
+            display.CombineAssets(displayList, 2, 1); // CombineAssets(displayList, [2], 1) for DELETE asset in DB
             break;
 
         case "6":
