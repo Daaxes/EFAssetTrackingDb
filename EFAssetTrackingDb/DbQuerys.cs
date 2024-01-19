@@ -214,9 +214,10 @@ namespace EFAssetTrackingDb
         // public static int DeleteDataInDb(List<Display> asset)
         // Takes in AssetList
         // Return number of records deleted in database if 0 then it failed
-        public static int UpdateRecordInDb(List<Display> asset)
+        public static Asset UpdateRecordInDb(List<Display> asset)
         {
             Display display = new Display();
+//            Asset assetRecord = null;
 
             string computerPhone = "";
             int assetId = 0;
@@ -227,52 +228,59 @@ namespace EFAssetTrackingDb
                 assetId = item.ComputerPhoneId;
             }
 
-            //var record = Context.Computers.FirstOrDefault(a => a.Id == assetId)
-            //            .;
-            //var record = Context.Computers.Select(a => a.Id == assetId)
-            //            .Join(;
-
-            var record = Context.Computers
-                            .Where(computer => computer.Id == assetId)
-                            .Join(Context.Offices, computer => computer.OfficeId, office => office.Id, (computer, office) => new { computer, office })
-                            .Join(Context.HQs, result => result.office.HQId, hq => hq.Id, (result, hq) => new { result.computer, result.office, hq })
-                            .Select(result => new
-                            {
-                                ComputerId = result.computer.Id,
-                                ComputerType = result.computer.Type,
-                                Brand = result.computer.Brand,
-                                Model = result.computer.Model,
-                                PurchaseDate = result.computer.PurchaseDate,
-                                Price = result.computer.Price,
-                                OfficeName = result.office.OfficeName,
-                                OfficeCountry = result.office.OfficeCountry,
-                                HQName = result.hq.HQName,
-                                HQCountry = result.hq.HQCountry
-                            })
-                            .FirstOrDefault();
-
-            int id = record.ComputerId;
-            string brand = record.Brand;
-            string model = record.Model;
-            string type = record.ComputerType;
-            int price = record.Price;
-            DateTime purchaceDate = record.PurchaseDate;
-            string officeName = $"{record.OfficeName} {record.OfficeCountry}";
-            string hqName = $"HQ {record.HQName} in {record.HQCountry}";
-
-            //if (computerPhone == "computer".ToLower())
-            //{
-            //    var record = Context.Computers.FirstOrDefault(a => a.Id == assetId);
-            //    Context.Computers.Remove(record);
-            //    return Context.SaveChanges();
-            //}
-            //else if (computerPhone == "phone".ToLower())
-            //{
-            //    var record = Context.Phones.FirstOrDefault(a => a.Id == assetId);
-            //    Context.Phones.Remove(record);
-            //    return Context.SaveChanges();
-            //}
-            return 0;
+            if (computerPhone.ToUpper() == "COMPUTER")
+            {
+                var record = Context.Computers
+                                .Where(computer => computer.Id == assetId)
+                                .Join(Context.Offices, computer => computer.OfficeId, office => office.Id, (computer, office) => new { computer, office })
+                                .Join(Context.HQs, result => result.office.HQId, hq => hq.Id, (result, hq) => new { result.computer, result.office, hq })
+                                .Select(result => new Asset
+                                 {
+                                    Id = result.computer.Id,
+                                    Type = result.computer.Type,
+                                    Brand = result.computer.Brand,
+                                    Model = result.computer.Model,
+                                    PurchaseDate = result.computer.PurchaseDate,
+                                    Price = result.computer.Price,
+                                    OfficeName = result.office.OfficeName,
+                                    OfficeCountry = result.office.OfficeCountry,
+                                    HQName = result.hq.HQName,
+                                    HQCountry = result.hq.HQCountry
+                                })
+                                .FirstOrDefault();
+                return record;
+             }
+            else
+            { 
+                var record = Context.Phones
+                                .Where(phone => phone.Id == assetId)
+                                .Join(Context.Offices, phone => phone.OfficeId, office => office.Id, (phone, office) => new { phone, office })
+                                .Join(Context.HQs, result => result.office.HQId, hq => hq.Id, (result, hq) => new { result.phone, result.office, hq })
+                                .Select(result => new Asset
+                                {
+                                    Id = result.phone.Id,
+                                    Type = result.phone.Type,
+                                    Brand = result.phone.Brand,
+                                    Model = result.phone.Model,
+                                    PurchaseDate = result.phone.PurchaseDate,
+                                    Price = result.phone.Price,
+                                    OfficeName = result.office.OfficeName,
+                                    OfficeCountry = result.office.OfficeCountry,
+                                    HQName = result.hq.HQName,
+                                    HQCountry = result.hq.HQCountry
+                                })
+                                .FirstOrDefault();
+                //assetRecord.Id = record.Id;
+                //assetRecord.Brand = record.Brand;
+                //assetRecord.Model = record.Model;
+                //assetRecord.Type = record.Type;
+                //assetRecord.Price = record.Price;
+                //assetRecord.PurchaseDate = record.PurchaseDate;
+                //assetRecord.Office = $"{record.OfficeName} {record.OfficeCountry}";
+                //assetRecord.HQ = $"HQ {record.HQName} in {record.HQCountry}";
+                //assetRecord.ComputerPhone = computerPhone;
+                return record;
+            }
         }
 
         // public static int DeleteDataInDb(List<Display> asset)

@@ -187,6 +187,7 @@ while (true)
             display.ShowHeader(0, 0);
             display.ShowMenu(0, 6);
             display.WriteBackground();
+            display.ClearSubMenuTitle();
             break;
         case "1":
             displayList = DbQuerys.CombinePhoneAndComputerToAsset(); // Compine Phone and Computer from DB to AssetList then Combine Warrenty info to a DisplayList
@@ -194,11 +195,13 @@ while (true)
             break;
         case "2":
             display.ClearMenu();
+            display.ClearSubMenuTitle();
             display.ClearOutputScreen();
             CollectInsertToDB();                        // CollectInsertToDB() For CREATE asset to DB
             break;
         case "3":
             display.ClearMenu();
+            display.ClearSubMenuTitle();
             display.ClearOutputScreen();
             displayList = DbQuerys.CombinePhoneAndComputerToAsset(); // Compine Phone and Computer from DB to AssetList then Combine Warrenty info to a DisplayList
             display.CombineAssets(displayList, 1, 1); // CombineAssets(displayList, [1], 1) For UPDATE asset in DB
@@ -206,6 +209,7 @@ while (true)
         case "4":
             display.ClearMenu();
             display.ClearOutputScreen();
+            display.ClearInfoMenuTitle();
             displayList = DbQuerys.CombinePhoneAndComputerToAsset(); // Compine Phone and Computer from DB to AssetList then Combine Warrenty info to a DisplayList
             display.CombineAssets(displayList, 2, 1); // CombineAssets(displayList, [2], 1) for DELETE asset in DB
             break;

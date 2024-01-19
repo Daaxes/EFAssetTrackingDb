@@ -1,6 +1,8 @@
 ﻿using Azure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +27,8 @@ namespace EFAssetTrackingDb
         public readonly ConsoleColor YELLOW = ConsoleColor.Yellow;
         public readonly ConsoleColor BLACK = ConsoleColor.Black;
         public readonly ConsoleColor WHITE = ConsoleColor.White;
+
+//        public ConsoleColor DEFAULTBACKGROUND;
 
         // variables for writing background Position X
         public readonly int POSX1 = 0;
@@ -170,6 +174,7 @@ namespace EFAssetTrackingDb
                 ClearLine(0, i);
             }
         }
+
         public void ClearOutputScreenFromPosX(int posX, int posY, int lines = 129)
         {
             SetCursurPos(posX, posY);
@@ -185,7 +190,8 @@ namespace EFAssetTrackingDb
             {
                 for (int x = POSX1 + 1; x < POSX2 - 1; x++)
                 {
-                    PrintOutputPos(BLACK, " ", x, y);
+                    ClearOutputScreenFromPosX(x, y, 1);
+//                    PrintOutputPos(BLACK, " ", x, y);
                 }
             }
         }
@@ -196,8 +202,17 @@ namespace EFAssetTrackingDb
             {
                 for (int x = POSX3 + 1; x < POSX4 - 1; x++)
                 {
-                    PrintOutputPos(BLACK, " ", x, y);
+                    ClearOutputScreenFromPosX(x, y, 1);
+//                    PrintOutputPos(BLACK, " ", x, y);
                 }
+            }
+        }
+        public void ClearSubMenuTitle()
+        {
+            for (int x = POSX3 + 1; x < POSX4; x++)
+            {
+                ClearOutputScreenFromPosX(x, POSY2 + 1, 1);
+//                PrintOutputPos(RED, " ", x, POSY2 + 1);
             }
         }
 
@@ -207,7 +222,8 @@ namespace EFAssetTrackingDb
             {
                 for (int x = POSX1 + 1; x < POSX5 - 1; x++)
                 {
-                    PrintOutputPos(BLACK, " ", x, y);
+                    ClearOutputScreenFromPosX(x, y, 1);
+//                    PrintOutputPos(BLACK, " ", x, y);
                 }
             }
         }
@@ -216,7 +232,8 @@ namespace EFAssetTrackingDb
         {
             for (int x = POSX4 + 1; x < POSX5 - 1; x++)
             {
-                PrintOutputPos(BLACK, " ", x, POSY3 + 1);
+                ClearOutputScreenFromPosX(x, POSY2 + 1, 1);
+//                PrintOutputPos(BLACK, " ", x, POSY2 + 1);
             }
         }
         public void ClearInfoMenu()
@@ -225,7 +242,8 @@ namespace EFAssetTrackingDb
             {
                 for (int x = POSX4 + 1; x < POSX5 - 1; x++)
                 {
-                    PrintOutputPos(BLACK, " ", x, y);
+                    ClearOutputScreenFromPosX(x, y, 1);
+//                    PrintOutputPos(BLACK, " ", x, y);
                 }
             }
         }
@@ -389,6 +407,7 @@ namespace EFAssetTrackingDb
             int assetNumber = 0;
             tempList = displayList;
             string input = string.Empty;
+            Asset asset = null;
 
             while (true)
             { 
@@ -447,24 +466,27 @@ namespace EFAssetTrackingDb
                     {
                         if (chooseDbFunc == 1)
                         {
+                            ClearInfoMenuTitle();
                             ClearOutputScreen();
-                            int updated = DbQuerys.UpdateRecordInDb(STOREOUTPUTLIST.GetRange(assetNumber - 1, 1));
-                            if (updated > 0)
-                            {
-                                PrintOutputPos(GREEN, "Update successful", POSX4 + 1, POSY4 + 1);
-                                Thread.Sleep(MILLISECONDS);
-                                ClearInfoMenu();
-                            }
-                            else
-                            {
-                                PrintOutputPos(RED, "Update faild", POSX4 + 1, POSY4 + 1);
-                                Thread.Sleep(MILLISECONDS);
-                                ClearInfoMenu();
-                            }
+                            asset = DbQuerys.UpdateRecordInDb(STOREOUTPUTLIST.GetRange(assetNumber - 1, 1));
+                            ShowSubMenuCollectToUpdateDb(GREEN, asset);
+                            //if (updated > 0)
+                            //{
+                            //    PrintOutputPos(GREEN, "Update successful", POSX4 + 1, POSY4 + 1);
+                            //    Thread.Sleep(MILLISECONDS);
+                            //    ClearInfoMenu();
+                            //}
+                            //else
+                            //{
+                            //    PrintOutputPos(RED, "Update faild", POSX4 + 1, POSY4 + 1);
+                            //    Thread.Sleep(MILLISECONDS);
+                            //    ClearInfoMenu();
+                            //}
                         }
                         else if (chooseDbFunc == 2)
                         {
                             ClearOutputScreen();
+                            ClearInfoMenuTitle();
                             int deleted = DbQuerys.DeleteRecordInDb(STOREOUTPUTLIST.GetRange(assetNumber - 1, 1));
                             if (deleted > 0)
                             {
@@ -541,8 +563,8 @@ namespace EFAssetTrackingDb
             {
                 PrintOutputPos(menuColor, "Phone type    : ", POSX3 + 2, POSY2 + 5);
             }
-
         }
+
         public void ShowOffices(List<Office> offices)
         {
             int count = 1;
@@ -553,5 +575,119 @@ namespace EFAssetTrackingDb
             }
         }
 
+        public void ShowSubMenuCollectToUpdateDb(ConsoleColor menuColor, Asset asset = null)
+        {
+            List<Asset> assetList = new List<Asset>();
+            assetList.Add(asset);
+            int startPosX = POSX3 + 18;
+            int startPosY = POSY3 + 1;
+            int outputRow = 5;
+
+            ClearOutputScreen();//           ClearOutputScreenFromPosY(6, 28 - posY);
+            ClearSubMenu();
+            ClearMenu();
+            ShowInsertInToDbMenu();
+            ClearInfoMenuTitle();
+            PrintOutputPos(GREEN, "Update int Database", POSX3 + 2, POSY2 + 1);
+            //if (computerPhone.Contains("Computer") || computerPhone.Contains("Phone"))
+            //{
+                PrintOutputPos(YELLOW, "Yellow sign cant be changed", POSX4 + 2, POSY2 + 1);
+                PrintOutputPos(menuColor, $"{asset.ComputerPhone} ", POSX3 + 2, POSY2 + 1);
+                PrintOutputPos(menuColor, $"Brand         : {asset.Brand}", POSX3 + 2, POSY2 + 3);
+                PrintOutputPos(menuColor, $"Model         : {asset.Model}", POSX3 + 2, POSY2 + 4);
+                PrintOutputPos(menuColor, $"Computer type : {asset.Type}", POSX3 + 2, POSY2 + 5);
+                PrintOutputPos(menuColor, $"Price (Dollar): {asset.Price}", POSX3 + 2, POSY2 + 6);
+                PrintOutputPos(menuColor, $"PurchaseDate  : {asset.PurchaseDate.ToString("yyyy-MM-dd")}" , POSX3 + 2, POSY2 + 7);
+                PrintOutputPos(YELLOW, $"Office        : {asset.OfficeName} in {asset.OfficeCountry}", POSX3 + 2, POSY2 + 8);
+                PrintOutputPos(YELLOW, $"HQ            : {asset.HQName} in {asset.HQCountry}", POSX3 + 2, POSY2 + 9);
+
+            asset = CollectAssetToUpdateDb(asset, startPosX, startPosY, outputRow, 0);
+            int d = 0;
+            //}
+
+            //if (computerPhone.Contains("Computer"))
+            //{
+            //    PrintOutputPos(menuColor, $"Computer type : {asset.Type}", POSX3 + 2, POSY2 + 5);
+            //}
+            //else if (computerPhone.Contains("Phone"))
+            //{
+            //    PrintOutputPos(menuColor, $"Phone type    : {}", POSX3 + 2, POSY2 + 5);
+            //}
+        }
+
+        public Asset CollectAssetToUpdateDb(Asset asset, int posX, int posY, int row, int count)
+        {
+            for (int i = count; i < row ; i++)
+            { 
+                SetCursurPos(posX, POSY3 + 1 + count);
+                string input = Console.ReadLine();
+            
+                if (input != null)
+                {
+                    if (count == 3)
+                    { 
+                        try
+                        {
+                            var intInput = Int32.Parse(input);
+                        }
+                        catch (FormatException e)
+                        {
+                            PrintOutputPos(YELLOW, "The input is not a number", POSX4 + 1, POSY3 + 1 + count);
+                            Thread.Sleep(MILLISECONDS);
+                            ClearInfoMenu();
+                            CollectAssetToUpdateDb(asset, posX, posY + count, row, count);
+                        }
+                    UpdateAsset(asset, input, count);
+                    }
+                    if (count == 4)
+                    {
+                        try
+                        {
+                            var dateInput = DateTime.Parse(input);
+                        }
+                        catch (FormatException e)
+                        {
+                            PrintOutputPos(YELLOW, "The input is not a Date", POSX4 + 1, POSY3 + 1 + count);
+                            Thread.Sleep(MILLISECONDS);
+                            ClearInfoMenu();
+                            CollectAssetToUpdateDb(asset, posX, posY + count, row, count);
+                        }
+                        UpdateAsset(asset, input, count);
+                    }
+                }
+                asset = UpdateAsset(asset, input, count);
+                count++;
+            }
+            return asset;
+        }
+
+        public Asset UpdateAsset(Asset asset, string input, int index)
+        {
+            if (asset != null && input != null && index >= 0)
+            {
+                switch (index)
+                {
+                    case 0:
+                        asset.Brand = input;
+                        break;
+                    case 1:
+                        asset.Model = input;
+                        break;
+                    case 2:
+                        asset.Type = input;
+                        break;
+                    case 3:
+                        asset.Price = Int32.Parse(input);
+                        break;
+                    case 4:
+                        asset.PurchaseDate = DateTime.Parse(input);
+                        break;
+                        //case 5:
+                        //    asset.OfficeId = Int32.Parse(input);
+                        //    break;
+                }
+            }
+            return asset;
+        }
     }
 }

@@ -55,6 +55,11 @@ namespace EFAssetTrackingDb
         public int Price { get; set; }
         public int Warrenty { get; set; }
         public int OfficeId { get; set; }
+        public string OfficeName { get; set; }
+        public string OfficeCountry { get; set; }
+        public string HQName { get; set; }
+        public string HQCountry { get; set; }
+
 
         //        public Office Office { get; set; }
 
