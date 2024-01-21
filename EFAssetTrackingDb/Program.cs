@@ -6,23 +6,11 @@ using System.ComponentModel.Design;
 using System.Globalization;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Windows.Forms;
 
 MyDbContext Context = new MyDbContext();
 DbQuerys querys = new DbQuerys();
 Display display = new Display();
-
 StringBuilder input = new StringBuilder();
-//const ConsoleColor DARKYELLOW = ConsoleColor.DarkYellow;
-//const ConsoleColor RED = ConsoleColor.Red;
-//const ConsoleColor GREEN = ConsoleColor.Green;
-//const ConsoleColor BLUE = ConsoleColor.Blue;
-//const ConsoleColor YELLOW = ConsoleColor.Yellow;
-//const int milliseconds = 2000;
 
 display.ShowHeader(0, 0); // Shows header with info about headquaters, Offices, Computers and warrenty, phones and warrenty 
 display.ShowMenu(0, 6);   // Shows menu
@@ -45,6 +33,8 @@ void CollectInsertToDB()
             display.ShowHeader(0, 0);
             display.ShowMenu(0, 6);
             display.WriteBackground();
+            display.ClearSubMenuTitle();
+            display.ClearSubMenu();
             break;
         case "1":
             display.ShowSubMenuCollectToDb(display.YELLOW, "Computer");
@@ -63,7 +53,8 @@ void CollectInsertToDB()
             }
             break;
         case "Q":
-
+        case "q":
+            DbQuerys.QuitProgram(0);
             break;
     }
     
@@ -90,6 +81,7 @@ int CollectDataForDb(int computerPhone)
         display.PrintOutputPos(display.YELLOW, $"{oneOffice.OfficeName} {oneOffice.OfficeCountry}", posX, display.POSY3 + 6);
         display.ClearInfoMenu();
         display.PrintOutputPos(display.YELLOW, "Save to Database? [Y/N] ", display.POSX3 + 2, display.POSY3 + 7);
+
         input.Clear();
         input.Append(Console.ReadLine());
 
@@ -98,22 +90,37 @@ int CollectDataForDb(int computerPhone)
             DbQuerys.InsertDataToDb(computerPhone, brand, model, type, price, purchaseDate, officeId); 
             display.ClearSubMenu();
             display.PrintOutputPos(display.YELLOW, "Insert more items? [Y/N] ", display.POSX3 + 2, display.POSY3 + 1);
-            input.Clear();
-            input.Append(Console.ReadLine());
 
-            if (input.ToString().ToLower() == "y")
+            while(true)
             {
-                return 0;
+                input.Clear();
+                input.Append(Console.ReadLine());
+
+                if (input.ToString().ToLower() == "y")
+                {
+                    return 0;
+                }
+                else if (input.ToString().ToLower() == "n")
+                {
+                    DbQuerys.ResetTrackingAsset();
+                    return 1;
+                }
+                else
+                {
+                    display.ClearSubMenu();
+                    display.PrintOutputPos(display.YELLOW, "Wrong input Must be [Y/N] ", display.POSX3 + 2, display.POSY3 + 1);
+                }
             }
         }
         else if (input.ToString().ToLower() == "n" || input.ToString().ToLower() == "0")
         {
             input.Clear();
+            DbQuerys.ResetTrackingAsset();
             return 1;
         }
         else if (input.ToString().ToLower() == "q")
         {
-        Environment.Exit(0);
+            DbQuerys.QuitProgram(0);
         }
         return 0;        
     }
@@ -167,7 +174,6 @@ int CollectDataForDb(int computerPhone)
             return DateTime.Now.Date.ToString();
         }
         return inputStr;
-
     }
 
 while (true)
@@ -188,6 +194,7 @@ while (true)
             display.ShowMenu(0, 6);
             display.WriteBackground();
             display.ClearSubMenuTitle();
+            display.ClearSubMenu();
             break;
         case "1":
             displayList = DbQuerys.CombinePhoneAndComputerToAsset(); // Compine Phone and Computer from DB to AssetList then Combine Warrenty info to a DisplayList
@@ -203,6 +210,7 @@ while (true)
             display.ClearMenu();
             display.ClearSubMenuTitle();
             display.ClearOutputScreen();
+            display.ShowUpdateSubMenu();
             displayList = DbQuerys.CombinePhoneAndComputerToAsset(); // Compine Phone and Computer from DB to AssetList then Combine Warrenty info to a DisplayList
             display.CombineAssets(displayList, 1, 1); // CombineAssets(displayList, [1], 1) For UPDATE asset in DB
             break;
@@ -213,30 +221,10 @@ while (true)
             displayList = DbQuerys.CombinePhoneAndComputerToAsset(); // Compine Phone and Computer from DB to AssetList then Combine Warrenty info to a DisplayList
             display.CombineAssets(displayList, 2, 1); // CombineAssets(displayList, [2], 1) for DELETE asset in DB
             break;
-
-        case "6":
-            display.SetCursurPos(0, 0);
-            for (int i = 0; i < Console.LargestWindowHeight; i++)
-                Console.WriteLine(i); ;      // Write newCar
+        case "q":
+        case "Q":
+            DbQuerys.QuitProgram(0);
             break;
-        case "7":
-            display.SetCursurPos(0, 0);
-            for (int i = 0; i < 120; i++)
-                Console.Write("X");      // Write newCar
-            break;
-
-        case "8":
-            display.WriteBackground();
-            break;
-        //    case "3":
-        //        test();               // Edit Project list if task is done
-        //        break;
-        //    //    case "4":
-        //    //        project.SaveToFile(projectList);        // Save projectlist to file in Current working directory
-        //    //        break;
-        //    case "5":
-        //        Car.updateDb(cars);
-        //        break;
         default:
             break;
     }

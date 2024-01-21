@@ -47,7 +47,7 @@ namespace EFAssetTrackingDb
         public readonly int POSY7 = 29;
         
         public readonly int MILLISECONDS = 2000;
-        public readonly int OUTPUTMAXROW = 12;
+        public readonly int OUTPUTMAXROW = 11;
 
         static List<Display> STOREOUTPUTLIST = new List<Display>();
 
@@ -191,7 +191,6 @@ namespace EFAssetTrackingDb
                 for (int x = POSX1 + 1; x < POSX2 - 1; x++)
                 {
                     ClearOutputScreenFromPosX(x, y, 1);
-//                    PrintOutputPos(BLACK, " ", x, y);
                 }
             }
         }
@@ -203,16 +202,14 @@ namespace EFAssetTrackingDb
                 for (int x = POSX3 + 1; x < POSX4 - 1; x++)
                 {
                     ClearOutputScreenFromPosX(x, y, 1);
-//                    PrintOutputPos(BLACK, " ", x, y);
                 }
             }
         }
         public void ClearSubMenuTitle()
         {
-            for (int x = POSX3 + 1; x < POSX4; x++)
+            for (int x = POSX2 + 1; x < POSX3; x++)
             {
                 ClearOutputScreenFromPosX(x, POSY2 + 1, 1);
-//                PrintOutputPos(RED, " ", x, POSY2 + 1);
             }
         }
 
@@ -223,7 +220,6 @@ namespace EFAssetTrackingDb
                 for (int x = POSX1 + 1; x < POSX5 - 1; x++)
                 {
                     ClearOutputScreenFromPosX(x, y, 1);
-//                    PrintOutputPos(BLACK, " ", x, y);
                 }
             }
         }
@@ -233,7 +229,6 @@ namespace EFAssetTrackingDb
             for (int x = POSX4 + 1; x < POSX5 - 1; x++)
             {
                 ClearOutputScreenFromPosX(x, POSY2 + 1, 1);
-//                PrintOutputPos(BLACK, " ", x, POSY2 + 1);
             }
         }
         public void ClearInfoMenu()
@@ -243,7 +238,6 @@ namespace EFAssetTrackingDb
                 for (int x = POSX4 + 1; x < POSX5 - 1; x++)
                 {
                     ClearOutputScreenFromPosX(x, y, 1);
-//                    PrintOutputPos(BLACK, " ", x, y);
                 }
             }
         }
@@ -267,17 +261,17 @@ namespace EFAssetTrackingDb
             Console.WriteLine("> There are total [   ] Phones and   [   ] are 3 month left [   ] are between 3 and 6 month [   ] are out of warrenty.\n");
             Console.ForegroundColor = YELLOW;
             Console.WriteLine("> [0] for showing menu");
-            PrintOutputPos(BLUE, DbQuerys.GetNumberOfHQsInDb().ToString(), 21, 1); // Desplays out haw many HQs there are
-            PrintOutputPos(BLUE, DbQuerys.GetNumberOfOfficesInDb().ToString(), 40, 1);
-            PrintOutputPos(BLUE, DbQuerys.GetNumberOfUniqCountrysInDb().ToString(), 63, 1);
-            PrintOutputPos(BLUE, DbQuerys.GetNumberOfComputersInDb().ToString(), 21, 2);
-            PrintOutputPos(BLUE, DbQuerys.GetNumberOfPhonesInDb().ToString(), 21, 3);
-            PrintOutputPos(BLUE, DbQuerys.CountWarrentyYellow(0).ToString(), 40, 3); // Count number of phones within Warrent Yellow span 6 to 3 mount left on warrenty
-            PrintOutputPos(BLUE, DbQuerys.CountWarrentyYellow(1).ToString(), 40, 2); // Count number of computers within Warrent Yellow span 6 to 3 mount left on warrenty
-            PrintOutputPos(BLUE, DbQuerys.CountWarrentyRed(0).ToString(), 63, 3); // Count number of phones within Warrent Red span 3 mount left on warrenty
-            PrintOutputPos(BLUE, DbQuerys.CountWarrentyRed(1).ToString(), 63, 2); // Count number of computers within Warrent Red span 3 mount left on warrenty
-            PrintOutputPos(BLUE, DbQuerys.CountWarrentyBlue(0).ToString(), 95, 3); // Count number of phones without Warrent 
-            PrintOutputPos(BLUE, DbQuerys.CountWarrentyBlue(1).ToString(), 95, 2); // Count number of computers without Warrent
+            PrintOutputPos(BLUE, DbQuerys.GetNumberOfHQsInDb().ToString(), 19, 1); // Desplays out haw many HQs there are
+            PrintOutputPos(BLUE, DbQuerys.GetNumberOfOfficesInDb().ToString(), 39, 1);
+            PrintOutputPos(BLUE, DbQuerys.GetNumberOfUniqCountrysInDb().ToString(), 62, 1);
+            PrintOutputPos(BLUE, DbQuerys.GetNumberOfComputersInDb().ToString(), 19, 2);
+            PrintOutputPos(BLUE, DbQuerys.GetNumberOfPhonesInDb().ToString(), 19, 3);
+            PrintOutputPos(BLUE, DbQuerys.CountWarrentyYellow(0).ToString(), 39, 3); // Count number of phones within Warrent Yellow span 6 to 3 mount left on warrenty
+            PrintOutputPos(BLUE, DbQuerys.CountWarrentyYellow(1).ToString(), 39, 2); // Count number of computers within Warrent Yellow span 6 to 3 mount left on warrenty
+            PrintOutputPos(BLUE, DbQuerys.CountWarrentyRed(0).ToString(), 62, 3); // Count number of phones within Warrent Red span 3 mount left on warrenty
+            PrintOutputPos(BLUE, DbQuerys.CountWarrentyRed(1).ToString(), 62, 2); // Count number of computers within Warrent Red span 3 mount left on warrenty
+            PrintOutputPos(BLUE, DbQuerys.CountWarrentyBlue(0).ToString(), 94, 3); // Count number of phones without Warrent 
+            PrintOutputPos(BLUE, DbQuerys.CountWarrentyBlue(1).ToString(), 94, 2); // Count number of computers without Warrent
             Console.ResetColor();
 
         }
@@ -289,10 +283,9 @@ namespace EFAssetTrackingDb
             Console.WriteLine("> [2] Add a new asset:");
             Console.WriteLine("> [3] Update a asset :");
             Console.WriteLine("> [4] Delete a asset :");
-//            Console.WriteLine("> [5] Save to Db   :");
-            Console.WriteLine("> [Q] Save and Quit :");
+            Console.WriteLine("\n> [Q] Save and Quit :");
             ShowMakeYourChoiseMenu(true);
-             Console.ResetColor();
+            Console.ResetColor();
         }
 
         public void ShowMakeYourChoiseMenu(bool show)
@@ -308,15 +301,24 @@ namespace EFAssetTrackingDb
             }
         }
 
+        public int ShowUpdateSubMenu()
+        {
+            ClearSubMenuTitle();
+            ClearSubMenu();
+            PrintOutputPos(YELLOW, "Update database", POSX2 + 2, POSY2 + 1);
+            PrintOutputPos(YELLOW, "Choose Index number", POSX2 + 2, POSY3 + 1);
+            DbQuerys.ResetTrackingAsset();
+            return 5;
+        }
 
+        // Printout Show insert menu
         public void ShowInsertInToDbMenu()
         {
-            //            SetCursurPos(posX + 1, posY);                    // Set Cursur to input line
-            PrintOutputPos(GREEN, " Insert into database", POSX2 + 1, POSY3 + 1);
-            PrintOutputPos(GREEN, " [1] Insert Computer:", POSX2 + 1, POSY3 + 2);
-            PrintOutputPos(GREEN, " [2] Insert Phone:", POSX2 + 1, POSY3 + 3);
-            //            SetCursurPos(PosX + 21, posY + 13);                    // Set Cursur to input line
-
+            ClearSubMenuTitle();
+            ClearInfoMenuTitle();
+            PrintOutputPos(GREEN, " Insert into database", POSX2 + 1, POSY2 + 1);
+            PrintOutputPos(GREEN, " [1] Insert Computer:", POSX2 + 1, POSY3 + 1);
+            PrintOutputPos(GREEN, " [2] Insert Phone:", POSX2 + 1, POSY3 + 2);
             Console.ResetColor();
         }
 
@@ -343,7 +345,7 @@ namespace EFAssetTrackingDb
         public void ShowWarrentyInfo()
         {
             PrintOutputPos(BLUE, "Blue = Out of warrenty", POSX3 + 2, POSY3 + 1);
-            PrintOutputPos(YELLOW, "Yellow = Warrenty between 6 Month and 3 Month left", POSX3 + 2, POSY3 + 2);
+            PrintOutputPos(YELLOW, "Yellow = Between 3 and 6 Month left", POSX3 + 2, POSY3 + 2);
             PrintOutputPos(RED, "Red = Warrenty 3 Month left", POSX3 + 2, POSY3 + 3);
             PrintOutputPos(GREEN, "Green = In Warrenty", POSX3 + 2, POSY3 + 4);
         }
@@ -378,13 +380,22 @@ namespace EFAssetTrackingDb
                     default:
                         break;
                 };
-                assetStr.Append($"{asset.Id.ToString().PadRight(2)}{asset.ComputerPhone.PadRight(9)}{asset.Brand.PadRight(8)}{asset.Model.PadRight(18)}{asset.Type.PadRight(13)}{asset.Price.ToString().PadRight(6)}");
+                assetStr.Append($"{" ".PadRight(3 - (asset.Id.ToString().Length) + 1)}{asset.Id.ToString().PadRight(3 + asset.Id.ToString().Length)}{asset.ComputerPhone.PadRight(10)}{asset.Brand.PadRight(9)}{asset.Model.PadRight(14)}{asset.Type.PadRight(13)}{asset.Price.ToString().PadRight(7)}{asset.PurchaseDate.ToString("yyyy-MM-dd")}");
                 outputList = CreatePrintOutput(WarrentyColor, assetStr.ToString(), outputList, asset.ComputerPhone, asset.Id);
                 assetStr.Clear();
             }
             return outputList;
         }
+        
+        // Printout Output category on screen
+        public void showOutputCategory()
+        {
+            ClearOutputScreen();
+            string outputCategory = $" Index   Id   Asset     Brand    Model         Type         Price  Purchase date";
+            PrintOutputPos(WHITE, outputCategory, POSX1 + 1, POSY6 + 1);
+        }
 
+        // Printout to next menu on screen
         public void ShowBrowseToNextMenu(int index)
         {   
             int numberOfAssets = DbQuerys.GetNumberOfComputersInDb() + DbQuerys.GetNumberOfPhonesInDb();
@@ -393,11 +404,14 @@ namespace EFAssetTrackingDb
             PrintOutputPos(GREEN, $"[P] Previous [{showedSide} of {countOutputSide}] Next [N] ", POSX1 + 1, POSY5 + 1);
          }
 
-
         // CombineAssets(List<Display> displayList, int chooseDbFunc, int index)
         // chooseDbFunc 0 = Select
         // chooseDbFunc 1 = Update
         // chooseDbFunc 2 = Delete
+        // Used for READ, UPDATE, DELETE in database
+        // Input List of assets combined to displayList
+        // Input int chooseDbFunc
+        // Input index, Checks which side of printout is shown if output is 15 rows 1 - row is in first side (index) 
         public int CombineAssets(List<Display> displayList, int chooseDbFunc, int index)
         {
             List<Display> tempList = new List<Display>();
@@ -409,6 +423,8 @@ namespace EFAssetTrackingDb
             string input = string.Empty;
             Asset asset = null;
 
+            showOutputCategory();
+            ShowWarrentyInfo();
             while (true)
             { 
                 if (displayList.Count > OUTPUTMAXROW)
@@ -417,7 +433,7 @@ namespace EFAssetTrackingDb
                     tempList = displayList.GetRange(0, OUTPUTMAXROW).ToList();
                     displayList.RemoveRange(0, OUTPUTMAXROW);
                     index = PrintoutAssets(tempList, index); 
-                     }
+                }
                 else
                 {
                     ShowBrowseToNextMenu(index);
@@ -429,7 +445,7 @@ namespace EFAssetTrackingDb
 
                 if (input.ToUpper() == "Q")
                 {
-                    Environment.Exit(0);
+                    DbQuerys.QuitProgram(0);
                 }
                 else if (input.ToUpper() == "N")
                 {
@@ -449,14 +465,14 @@ namespace EFAssetTrackingDb
                 {
                     ClearOutputScreen();
                     return 0;
-               }
+                }
                 else
                 {
                     try
                     {
                         assetNumber = Int32.Parse(input);
                     }
-                    catch (Exception ex)
+                    catch (FormatException)
                     {
                         PrintOutputPos(RED, $"{input} is not a number", POSX4 + 1, POSY4 + 1);
                         CombineAssets(displayList, chooseDbFunc, index);
@@ -470,18 +486,6 @@ namespace EFAssetTrackingDb
                             ClearOutputScreen();
                             asset = DbQuerys.UpdateRecordInDb(STOREOUTPUTLIST.GetRange(assetNumber - 1, 1));
                             ShowSubMenuCollectToUpdateDb(GREEN, asset);
-                            //if (updated > 0)
-                            //{
-                            //    PrintOutputPos(GREEN, "Update successful", POSX4 + 1, POSY4 + 1);
-                            //    Thread.Sleep(MILLISECONDS);
-                            //    ClearInfoMenu();
-                            //}
-                            //else
-                            //{
-                            //    PrintOutputPos(RED, "Update faild", POSX4 + 1, POSY4 + 1);
-                            //    Thread.Sleep(MILLISECONDS);
-                            //    ClearInfoMenu();
-                            //}
                         }
                         else if (chooseDbFunc == 2)
                         {
@@ -521,7 +525,7 @@ namespace EFAssetTrackingDb
 
             foreach (var asset in displayList)
             {
-                PrintOutputPos(asset.MenuColor, $"{index}: {asset.OutputString}", POSX1 + 1, POSY6 + count);
+                PrintOutputPos(asset.MenuColor, $"{" ".ToString().PadRight(4 - (index.ToString().Length) + 1)}{index}: {asset.OutputString}", POSX1 + 1, POSY6 + 1 + count);
                 index++;
                 count++;
             }
@@ -529,11 +533,8 @@ namespace EFAssetTrackingDb
         }
         public List<Display> CreatePrintOutput(ConsoleColor menuColor, string assets, List<Display> outputList, string computerPhone, int id)
         {
-            //            List<Display> outputList = new List<Display>();
             outputList.Add(new Display(menuColor, assets, computerPhone, id));
             STOREOUTPUTLIST = outputList.ToList();
-//            STOREOUTPUTLIST.Add(new Display(menuColor, assets, computerPhone, id));
- 
             return outputList;
         }
 
@@ -547,7 +548,7 @@ namespace EFAssetTrackingDb
 
             if (computerPhone.Contains("Computer") || computerPhone.Contains("Phone"))
             {
-                PrintOutputPos(menuColor, computerPhone, POSX3 + 2, POSY2 + 1);
+                PrintOutputPos(menuColor, $"Create new {computerPhone.ToLower()}", POSX3 + 2, POSY2 + 1);
                 PrintOutputPos(menuColor, "Brand         : ", POSX3 + 2, POSY2 + 3);
                 PrintOutputPos(menuColor, "Model         : ", POSX3 + 2, POSY2 + 4);
                 PrintOutputPos(menuColor, "Price (Dollar): ", POSX3 + 2, POSY2 + 6);
@@ -586,58 +587,48 @@ namespace EFAssetTrackingDb
             ClearOutputScreen();//           ClearOutputScreenFromPosY(6, 28 - posY);
             ClearSubMenu();
             ClearMenu();
-            ShowInsertInToDbMenu();
+            ClearSubMenu();
+            ClearSubMenuTitle();
             ClearInfoMenuTitle();
-            PrintOutputPos(GREEN, "Update int Database", POSX3 + 2, POSY2 + 1);
-            //if (computerPhone.Contains("Computer") || computerPhone.Contains("Phone"))
-            //{
-                PrintOutputPos(YELLOW, "Yellow sign cant be changed", POSX4 + 2, POSY2 + 1);
-                PrintOutputPos(menuColor, $"{asset.ComputerPhone} ", POSX3 + 2, POSY2 + 1);
-                PrintOutputPos(menuColor, $"Brand         : {asset.Brand}", POSX3 + 2, POSY2 + 3);
-                PrintOutputPos(menuColor, $"Model         : {asset.Model}", POSX3 + 2, POSY2 + 4);
-                PrintOutputPos(menuColor, $"Computer type : {asset.Type}", POSX3 + 2, POSY2 + 5);
-                PrintOutputPos(menuColor, $"Price (Dollar): {asset.Price}", POSX3 + 2, POSY2 + 6);
-                PrintOutputPos(menuColor, $"PurchaseDate  : {asset.PurchaseDate.ToString("yyyy-MM-dd")}" , POSX3 + 2, POSY2 + 7);
-                PrintOutputPos(YELLOW, $"Office        : {asset.OfficeName} in {asset.OfficeCountry}", POSX3 + 2, POSY2 + 8);
-                PrintOutputPos(YELLOW, $"HQ            : {asset.HQName} in {asset.HQCountry}", POSX3 + 2, POSY2 + 9);
+            PrintOutputPos(GREEN, " Update into Database", POSX2 + 2, POSY2 + 1);
+            PrintOutputPos(YELLOW, "Yellow sign cant be changed", POSX4 + 2, POSY2 + 1);
+            PrintOutputPos(menuColor, $"{asset.ComputerPhone} ", POSX3 + 2, POSY2 + 1);
+            PrintOutputPos(menuColor, $"Brand         : {asset.Brand}", POSX3 + 2, POSY2 + 3);
+            PrintOutputPos(menuColor, $"Model         : {asset.Model}", POSX3 + 2, POSY2 + 4);
+            PrintOutputPos(menuColor, $"Computer type : {asset.Type}", POSX3 + 2, POSY2 + 5);
+            PrintOutputPos(menuColor, $"Price (Dollar): {asset.Price}", POSX3 + 2, POSY2 + 6);
+            PrintOutputPos(menuColor, $"PurchaseDate  : {asset.PurchaseDate.ToString("yyyy-MM-dd")}" , POSX3 + 2, POSY2 + 7);
+            PrintOutputPos(YELLOW, $"Office        : {asset.OfficeName} in {asset.OfficeCountry}", POSX3 + 2, POSY2 + 8);
+            PrintOutputPos(YELLOW, $"HQ            : {asset.HQName} in {asset.HQCountry}", POSX3 + 2, POSY2 + 9);
 
             asset = CollectAssetToUpdateDb(asset, startPosX, startPosY, outputRow, 0);
-            int d = 0;
-            //}
-
-            //if (computerPhone.Contains("Computer"))
-            //{
-            //    PrintOutputPos(menuColor, $"Computer type : {asset.Type}", POSX3 + 2, POSY2 + 5);
-            //}
-            //else if (computerPhone.Contains("Phone"))
-            //{
-            //    PrintOutputPos(menuColor, $"Phone type    : {}", POSX3 + 2, POSY2 + 5);
-            //}
+            DbQuerys.UpdateDataInDb(ComputerPhone, asset);
+            ClearOutputScreen();
         }
 
         public Asset CollectAssetToUpdateDb(Asset asset, int posX, int posY, int row, int count)
         {
-            for (int i = count; i < row ; i++)
-            { 
+            do //for (int i = count; i < row ; i++)
+            {
                 SetCursurPos(posX, POSY3 + 1 + count);
                 string input = Console.ReadLine();
-            
-                if (input != null)
+
+                if (input.Length > 0)
                 {
                     if (count == 3)
-                    { 
+                    {
                         try
                         {
                             var intInput = Int32.Parse(input);
                         }
-                        catch (FormatException e)
+                        catch (FormatException)
                         {
                             PrintOutputPos(YELLOW, "The input is not a number", POSX4 + 1, POSY3 + 1 + count);
                             Thread.Sleep(MILLISECONDS);
                             ClearInfoMenu();
                             CollectAssetToUpdateDb(asset, posX, posY + count, row, count);
                         }
-                    UpdateAsset(asset, input, count);
+                        UpdateAsset(asset, input, count);
                     }
                     if (count == 4)
                     {
@@ -645,7 +636,7 @@ namespace EFAssetTrackingDb
                         {
                             var dateInput = DateTime.Parse(input);
                         }
-                        catch (FormatException e)
+                        catch (FormatException)
                         {
                             PrintOutputPos(YELLOW, "The input is not a Date", POSX4 + 1, POSY3 + 1 + count);
                             Thread.Sleep(MILLISECONDS);
@@ -655,15 +646,21 @@ namespace EFAssetTrackingDb
                         UpdateAsset(asset, input, count);
                     }
                 }
+
                 asset = UpdateAsset(asset, input, count);
                 count++;
+
+                if (count >= row)
+                {
+                    return asset;
+                }
             }
-            return asset;
+            while (true);
         }
 
         public Asset UpdateAsset(Asset asset, string input, int index)
         {
-            if (asset != null && input != null && index >= 0)
+            if (input.Length > 0)
             {
                 switch (index)
                 {

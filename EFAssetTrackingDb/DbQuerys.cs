@@ -9,6 +9,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Runtime.Serialization.DataContracts;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace EFAssetTrackingDb
 {
@@ -17,6 +18,26 @@ namespace EFAssetTrackingDb
         private static MyDbContext Context = new MyDbContext();
         public static List<Computer> ComputerList = new List<Computer>();
         public static List<Phone> PhoneList = new List<Phone>();
+        static Display display = new Display();
+
+        // Metod to quit program
+        public static void QuitProgram(int returnValue)
+        {
+            display.SetCursurPos(0, 0);
+            Console.ResetColor();
+            Console.Clear();
+            Environment.Exit(returnValue);
+        }
+
+        public static void ResetTrackingAsset()
+        {
+            display.SetCursurPos(0, 0);
+            Console.ResetColor();
+            Console.Clear();
+            display.ShowHeader(0, 0); // Shows header with info about headquaters, Offices, Computers and warrenty, phones and warrenty 
+            display.ShowMenu(0, 6);   // Shows menu
+            display.WriteBackground();
+        }
 
         // Returns the amount of headquarters
         public static int GetNumberOfHQsInDb()
@@ -65,8 +86,8 @@ namespace EFAssetTrackingDb
         // 2 Warrenty 3 month left RED
         public static int GetWarrenty(DateTime purchaseDate)
         {
-
-            var today = Convert.ToDateTime("2024-01-20", CultureInfo.GetCultureInfo("sv-SE"));
+//            var today = Convert.ToDateTime("2024-01-20", CultureInfo.GetCultureInfo("sv-SE"));
+            var today = DateTime.Now.Date;
             // Phones with 3 months or less remaining in warranty
             if (purchaseDate.AddYears(3).AddMonths(-3) <= today && purchaseDate.AddYears(3) > today)
             {
@@ -149,14 +170,16 @@ namespace EFAssetTrackingDb
             }
         }
 
+        // public static List<Display> CombinePhoneAndComputerToAsset()
+        // Inserts - void
+        // Returns Combine Computer and Phone to DisplayList
         public static List<Display> CombinePhoneAndComputerToAsset()
         {
             PhoneList = Context.Phones.ToList();
             ComputerList = Context.Computers.ToList();
             List<Asset> assetList = new List<Asset>();
             List<Display> displayList = new List<Display>();
-            Display display = new Display();
-
+ 
             foreach (var phone in PhoneList)
             {
                 int warrenty = GetWarrenty(phone.PurchaseDate);
@@ -178,7 +201,6 @@ namespace EFAssetTrackingDb
         // ComputerPhone 1 = Phone
         public static void InsertDataToDb(int ComputerPhone, string brand, string model, string computerType, int price, DateTime date, int officeId)
         {
-            Display display = new Display();
             int success = 0;
             display.ClearInfoMenu();
             
@@ -216,9 +238,6 @@ namespace EFAssetTrackingDb
         // Return number of records deleted in database if 0 then it failed
         public static Asset UpdateRecordInDb(List<Display> asset)
         {
-            Display display = new Display();
-//            Asset assetRecord = null;
-
             string computerPhone = "";
             int assetId = 0;
 
@@ -227,6 +246,7 @@ namespace EFAssetTrackingDb
                 computerPhone = item.ComputerPhone.ToLower();
                 assetId = item.ComputerPhoneId;
             }
+            
 
             if (computerPhone.ToUpper() == "COMPUTER")
             {
@@ -244,43 +264,106 @@ namespace EFAssetTrackingDb
                                     Price = result.computer.Price,
                                     OfficeName = result.office.OfficeName,
                                     OfficeCountry = result.office.OfficeCountry,
+                                    OfficeId = result.computer.OfficeId,
                                     HQName = result.hq.HQName,
                                     HQCountry = result.hq.HQCountry
                                 })
                                 .FirstOrDefault();
+                record.ComputerPhone = "Computer";
                 return record;
              }
             else
             { 
                 var record = Context.Phones
-                                .Where(phone => phone.Id == assetId)
-                                .Join(Context.Offices, phone => phone.OfficeId, office => office.Id, (phone, office) => new { phone, office })
-                                .Join(Context.HQs, result => result.office.HQId, hq => hq.Id, (result, hq) => new { result.phone, result.office, hq })
-                                .Select(result => new Asset
-                                {
-                                    Id = result.phone.Id,
-                                    Type = result.phone.Type,
-                                    Brand = result.phone.Brand,
-                                    Model = result.phone.Model,
-                                    PurchaseDate = result.phone.PurchaseDate,
-                                    Price = result.phone.Price,
-                                    OfficeName = result.office.OfficeName,
-                                    OfficeCountry = result.office.OfficeCountry,
-                                    HQName = result.hq.HQName,
-                                    HQCountry = result.hq.HQCountry
-                                })
-                                .FirstOrDefault();
-                //assetRecord.Id = record.Id;
-                //assetRecord.Brand = record.Brand;
-                //assetRecord.Model = record.Model;
-                //assetRecord.Type = record.Type;
-                //assetRecord.Price = record.Price;
-                //assetRecord.PurchaseDate = record.PurchaseDate;
-                //assetRecord.Office = $"{record.OfficeName} {record.OfficeCountry}";
-                //assetRecord.HQ = $"HQ {record.HQName} in {record.HQCountry}";
-                //assetRecord.ComputerPhone = computerPhone;
+                    .Where(phone => phone.Id == assetId)
+                    .Join(Context.Offices, phone => phone.OfficeId, office => office.Id, (phone, office) => new { phone, office })
+                    .Join(Context.HQs, result => result.office.HQId, hq => hq.Id, (result, hq) => new { result.phone, result.office, hq })
+                    .Select(result => new Asset
+                    {
+                        Id = result.phone.Id,
+                        Type = result.phone.Type,
+                        Brand = result.phone.Brand,
+                        Model = result.phone.Model,
+                        PurchaseDate = result.phone.PurchaseDate,
+                        Price = result.phone.Price,
+                        OfficeName = result.office.OfficeName,
+                        OfficeCountry = result.office.OfficeCountry,
+                        OfficeId = result.phone.OfficeId,
+                        HQName = result.hq.HQName,
+                        HQCountry = result.hq.HQCountry
+                    })
+                    .FirstOrDefault();
+                record.ComputerPhone = "Phone";
                 return record;
             }
+        }
+
+        public void CombineRecordsToComputer(Asset asset)
+        {
+//            Display display = new Display();
+            Computer computerRecord = new Computer();
+
+            computerRecord.Id = asset.Id;
+            computerRecord.Brand = asset.Brand;
+            computerRecord.Model = asset.Model;
+            computerRecord.Type = asset.Type;
+            computerRecord.Price = asset.Price;
+            computerRecord.PurchaseDate = asset.PurchaseDate;
+            computerRecord.OfficeId = asset.OfficeId;
+            Context.Add(computerRecord);
+            if (Context.SaveChanges() > 0)
+            {
+                display.PrintOutputPos(display.YELLOW, "Update succsseful", display.POSX4 + 1, display.POSY3 + 1);
+                Thread.Sleep(display.MILLISECONDS);
+                display.ClearInfoMenu();
+            }
+            else
+            {
+                display.PrintOutputPos(display.RED, "Update failed", display.POSX4 + 1, display.POSY3 + 1);
+                Thread.Sleep(display.MILLISECONDS);
+                display.ClearInfoMenu();
+            }
+        }
+
+
+        public static void UpdateDataInDb(string ComputerPhone, Asset asset)
+        {
+            if (asset.ComputerPhone.ToUpper() == "COMPUTER")
+            {
+                Computer record = Context.Computers.Find(asset.Id);
+                record.Id = asset.Id;
+                record.Brand = asset.Brand;
+                record.Model = asset.Model;
+                record.Type = asset.Type;
+                record.Price = asset.Price;
+                record.PurchaseDate = asset.PurchaseDate;
+                record.OfficeId = asset.OfficeId;
+                Context.Update(record);
+            }
+            else
+            {
+                Phone record = Context.Phones.Find(asset.Id);
+                record.Id = asset.Id;
+                record.Brand = asset.Brand;
+                record.Model = asset.Model;
+                record.Type = asset.Type;
+                record.Price = asset.Price;
+                record.PurchaseDate = asset.PurchaseDate;
+                record.OfficeId = asset.OfficeId;
+                Context.Update(record);
+            }
+
+            if (Context.SaveChanges() > 0)
+            {
+                display.PrintOutputPos(display.YELLOW, "Update succsseful", display.POSX4 + 1, display.POSY3 + 1);
+                Thread.Sleep(display.MILLISECONDS);
+            }
+            else
+            {
+                display.PrintOutputPos(display.RED, "Update failed", display.POSX4 + 1, display.POSY3 + 1);
+                Thread.Sleep(display.MILLISECONDS);
+            }
+            ResetTrackingAsset();
         }
 
         // public static int DeleteDataInDb(List<Display> asset)
@@ -288,8 +371,6 @@ namespace EFAssetTrackingDb
         // Return number of records deleted in database if 0 then it failed
         public static int DeleteRecordInDb(List<Display> asset)
         {
-            Display display = new Display();
-
             string computerPhone = "";
             int assetId = 0;
 
