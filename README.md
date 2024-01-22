@@ -51,7 +51,3 @@ DbContext class for Entity Framework Core with database connections and seeding 
 
 License
 This project is licensed under the MIT License - see the LICENSE.md file for details.
-Contains methods for database queries.
-
-MyDbContext
-DbContext class for Entity Framework Core with database connections and seeding data.
