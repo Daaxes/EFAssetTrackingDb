@@ -7,7 +7,7 @@ EFAssetTrackingDb is a simple console application using Entity Framework Core wi
 1. Clone the repository to your local machine.
 
    ```bash
-   git clone https://github.com/your-username/EFAssetTrackingDb.git
+   git clone https://github.com/Daaxes/EFAssetTrackingDb.git
 Open the solution in Visual Studio or your preferred C# development environment.
 
 Install nuget packages
