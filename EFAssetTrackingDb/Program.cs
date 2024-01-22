@@ -16,6 +16,128 @@ display.ShowHeader(0, 0); // Shows header with info about headquaters, Offices, 
 display.ShowMenu(0, 6);   // Shows menu
 display.WriteBackground();
 
+// CombineAssets(List<Display> displayList, int chooseDbFunc, int index)
+// chooseDbFunc 0 = Select
+// chooseDbFunc 1 = Update
+// chooseDbFunc 2 = Delete
+// Used for READ, UPDATE, DELETE in database
+// Input List of assets combined to displayList
+// Input int chooseDbFunc
+// Input index, Checks which side of printout is shown if output is 15 rows 1 - row is in first side (index) 
+int CombineAssets(List<Display> displayList, int chooseDbFunc, int index)
+{
+    List<Display> tempList = new List<Display>();
+    int countComputers = DbQuerys.GetNumberOfComputersInDb();
+    int countPhones = DbQuerys.GetNumberOfPhonesInDb();
+    int sumOfComputerPhones = countComputers + countPhones;
+    int assetNumber = 0;
+    tempList = displayList;
+    string input = string.Empty;
+    Asset asset = null;
+
+    display.showOutputCategory();
+    display.ShowWarrentyInfo();
+    while (true)
+    {
+        if (displayList.Count > display.OUTPUTMAXROW)
+        {
+            display.ShowBrowseToNextMenu(index);
+            tempList = displayList.GetRange(0, display.OUTPUTMAXROW).ToList();
+            displayList.RemoveRange(0, display.OUTPUTMAXROW);
+            index = display.PrintoutAssets(tempList, index);
+        }
+        else
+        {
+            display.ShowBrowseToNextMenu(index);
+            display.PrintoutAssets(tempList, index);
+        }
+
+        display.ShowMakeYourChoiseMenu(true);
+        input = Console.ReadLine();
+
+        if (input.ToUpper() == "Q") // Quit
+        {
+            DbQuerys.QuitProgram(0);
+        }
+        else if (input.ToUpper() == "N") // Next
+        {
+            display.ClearOutputScreen();
+            display.ShowMakeYourChoiseMenu(false);
+            display.ShowMakeYourChoiseMenu(true);
+            CombineAssets(displayList, chooseDbFunc, index);
+        }
+        //else if (input.ToUpper() == "P")
+        //{
+        //    display.ClearOutputScreen();
+        //    display.ShowMakeYourChoiseMenu(false);
+        //    display.ShowMakeYourChoiseMenu(true);
+        //    CombineAssets(displayList, chooseDbFunc, index - 1);
+        //}
+        else if (input == "0")
+        {
+            display.ClearOutputScreen();
+            return 0;
+        }
+        else
+        {
+            try
+            {
+                assetNumber = Int32.Parse(input);
+            }
+            catch (FormatException)
+            {
+                display.PrintOutputPos(display.RED, $"{input} is not a number", display.POSX4 + 1, display.POSY4 + 1);
+                CombineAssets(displayList, chooseDbFunc, index);
+            }
+
+            if (assetNumber > 0 && assetNumber <= sumOfComputerPhones)
+            {
+                if (chooseDbFunc == 1)
+                {
+                    display.ClearInfoMenuTitle();
+                    display.ClearOutputScreen();
+                    asset = DbQuerys.UpdateRecordInDb(tempList.GetRange(assetNumber - 1, 1));
+                    display.ShowSubMenuCollectToUpdateDb(display.GREEN, asset);
+                    return 0;
+                }
+                else if (chooseDbFunc == 2)
+                {
+//                    List<Display> DisplayList = display.STOREOUTPUTLIST;
+                    display.ClearOutputScreen();
+                    display.ClearInfoMenuTitle();
+//                    int deleted = DbQuerys.DeleteRecordInDb(display.STOREOUTPUTLIST.GetRange(assetNumber - 1, 1));
+                    int deleted = DbQuerys.DeleteRecordInDb(tempList.GetRange(assetNumber - 1, 1));
+
+                    if (deleted > 0)
+                    {
+                        display.PrintOutputPos(display.GREEN, "Delete successful", display.POSX4 + 1, display.POSY4 + 1);
+                        Thread.Sleep(display.MILLISECONDS);
+                        display.ClearInfoMenu();
+                        return 0;
+                    }
+                    else
+                    {
+                        display.PrintOutputPos(display.RED, "Delete faild", display.POSX4 + 1, display.POSY4 + 1);
+                        Thread.Sleep(display.MILLISECONDS);
+                        display.ClearInfoMenu();
+                        return 1;
+                    }
+                }
+            }
+            else
+            {
+                display.PrintOutputPos(display.RED, $"{assetNumber} is not within index number", display.POSX4 + 1, display.POSY4 + 1);
+                CombineAssets(displayList, chooseDbFunc, index);
+            }
+
+        }
+        display.ShowMakeYourChoiseMenu(false);
+        display.ShowMakeYourChoiseMenu(true);
+    }
+    return 0;
+}
+
+
 void CollectInsertToDB()
 {
     int done = 0;
@@ -180,7 +302,7 @@ while (true)
 {
     input.Clear();                      // Clear screen
     Console.ResetColor();               // Resets forground color
-                                        //    display.SetCursurPos(21, 13);
+    DbQuerys.ResetTrackingAsset();
     display.ShowMakeYourChoiseMenu(true);
     input.Append(Console.ReadLine());   // Read input to StringBuilder input
     display.ShowMakeYourChoiseMenu(false);
@@ -198,7 +320,7 @@ while (true)
             break;
         case "1":
             displayList = DbQuerys.CombinePhoneAndComputerToAsset(); // Compine Phone and Computer from DB to AssetList then Combine Warrenty info to a DisplayList
-            display.CombineAssets(displayList, 0, 1);   // CombineAssets(displayList, [0], 1) For READ asset from DB
+            CombineAssets(displayList, 0, 1);   // CombineAssets(displayList, [0], 1) For READ asset from DB
             break;
         case "2":
             display.ClearMenu();
@@ -212,14 +334,15 @@ while (true)
             display.ClearOutputScreen();
             display.ShowUpdateSubMenu();
             displayList = DbQuerys.CombinePhoneAndComputerToAsset(); // Compine Phone and Computer from DB to AssetList then Combine Warrenty info to a DisplayList
-            display.CombineAssets(displayList, 1, 1); // CombineAssets(displayList, [1], 1) For UPDATE asset in DB
+            CombineAssets(displayList, 1, 1); // CombineAssets(displayList, [1], 1) For UPDATE asset in DB
             break;
         case "4":
             display.ClearMenu();
             display.ClearOutputScreen();
             display.ClearInfoMenuTitle();
+            display.ShowDeleteSubMenu();
             displayList = DbQuerys.CombinePhoneAndComputerToAsset(); // Compine Phone and Computer from DB to AssetList then Combine Warrenty info to a DisplayList
-            display.CombineAssets(displayList, 2, 1); // CombineAssets(displayList, [2], 1) for DELETE asset in DB
+            CombineAssets(displayList, 2, 1); // CombineAssets(displayList, [2], 1) for DELETE asset in DB
             break;
         case "q":
         case "Q":

@@ -49,7 +49,7 @@ namespace EFAssetTrackingDb
         public readonly int MILLISECONDS = 2000;
         public readonly int OUTPUTMAXROW = 11;
 
-        static List<Display> STOREOUTPUTLIST = new List<Display>();
+        public List<Display> STOREOUTPUTLIST = new List<Display>();
 
         public Display()
         {
@@ -305,7 +305,17 @@ namespace EFAssetTrackingDb
         {
             ClearSubMenuTitle();
             ClearSubMenu();
-            PrintOutputPos(YELLOW, "Update database", POSX2 + 2, POSY2 + 1);
+            PrintOutputPos(YELLOW, "Update in database", POSX2 + 2, POSY2 + 1);
+            PrintOutputPos(YELLOW, "Choose Index number", POSX2 + 2, POSY3 + 1);
+            DbQuerys.ResetTrackingAsset();
+            return 5;
+        }
+
+        public int ShowDeleteSubMenu()
+        {
+            ClearSubMenuTitle();
+            ClearSubMenu();
+            PrintOutputPos(YELLOW, "Delete in  database", POSX2 + 2, POSY2 + 1);
             PrintOutputPos(YELLOW, "Choose Index number", POSX2 + 2, POSY3 + 1);
             DbQuerys.ResetTrackingAsset();
             return 5;
@@ -404,120 +414,120 @@ namespace EFAssetTrackingDb
             PrintOutputPos(GREEN, $"[P] Previous [{showedSide} of {countOutputSide}] Next [N] ", POSX1 + 1, POSY5 + 1);
          }
 
-        // CombineAssets(List<Display> displayList, int chooseDbFunc, int index)
-        // chooseDbFunc 0 = Select
-        // chooseDbFunc 1 = Update
-        // chooseDbFunc 2 = Delete
-        // Used for READ, UPDATE, DELETE in database
-        // Input List of assets combined to displayList
-        // Input int chooseDbFunc
-        // Input index, Checks which side of printout is shown if output is 15 rows 1 - row is in first side (index) 
-        public int CombineAssets(List<Display> displayList, int chooseDbFunc, int index)
-        {
-            List<Display> tempList = new List<Display>();
-            int countComputers = DbQuerys.GetNumberOfComputersInDb();
-            int countPhones = DbQuerys.GetNumberOfPhonesInDb();
-            int sumOfComputerPhones = countComputers + countPhones;
-            int assetNumber = 0;
-            tempList = displayList;
-            string input = string.Empty;
-            Asset asset = null;
+        //// CombineAssets(List<Display> displayList, int chooseDbFunc, int index)
+        //// chooseDbFunc 0 = Select
+        //// chooseDbFunc 1 = Update
+        //// chooseDbFunc 2 = Delete
+        //// Used for READ, UPDATE, DELETE in database
+        //// Input List of assets combined to displayList
+        //// Input int chooseDbFunc
+        //// Input index, Checks which side of printout is shown if output is 15 rows 1 - row is in first side (index) 
+        //public int CombineAssets(List<Display> displayList, int chooseDbFunc, int index)
+        //{
+        //    List<Display> tempList = new List<Display>();
+        //    int countComputers = DbQuerys.GetNumberOfComputersInDb();
+        //    int countPhones = DbQuerys.GetNumberOfPhonesInDb();
+        //    int sumOfComputerPhones = countComputers + countPhones;
+        //    int assetNumber = 0;
+        //    tempList = displayList;
+        //    string input = string.Empty;
+        //    Asset asset = null;
 
-            showOutputCategory();
-            ShowWarrentyInfo();
-            while (true)
-            { 
-                if (displayList.Count > OUTPUTMAXROW)
-                {
-                    ShowBrowseToNextMenu(index);
-                    tempList = displayList.GetRange(0, OUTPUTMAXROW).ToList();
-                    displayList.RemoveRange(0, OUTPUTMAXROW);
-                    index = PrintoutAssets(tempList, index); 
-                }
-                else
-                {
-                    ShowBrowseToNextMenu(index);
-                    PrintoutAssets(tempList, index);
-                }
+        //    showOutputCategory();
+        //    ShowWarrentyInfo();
+        //    while (true)
+        //    { 
+        //        if (displayList.Count > OUTPUTMAXROW)
+        //        {
+        //            ShowBrowseToNextMenu(index);
+        //            tempList = displayList.GetRange(0, OUTPUTMAXROW).ToList();
+        //            displayList.RemoveRange(0, OUTPUTMAXROW);
+        //            index = PrintoutAssets(tempList, index); 
+        //        }
+        //        else
+        //        {
+        //            ShowBrowseToNextMenu(index);
+        //            PrintoutAssets(tempList, index);
+        //        }
                 
-                ShowMakeYourChoiseMenu(true);
-                input = Console.ReadLine();
+        //        ShowMakeYourChoiseMenu(true);
+        //        input = Console.ReadLine();
 
-                if (input.ToUpper() == "Q")
-                {
-                    DbQuerys.QuitProgram(0);
-                }
-                else if (input.ToUpper() == "N")
-                {
-                    ClearOutputScreen();
-                    ShowMakeYourChoiseMenu(false);
-                    ShowMakeYourChoiseMenu(true);
-                    CombineAssets(displayList, chooseDbFunc, index);
-                }
-                else if (input.ToUpper() == "P")
-                {
-                    ClearOutputScreen();
-                    ShowMakeYourChoiseMenu(false);
-                    ShowMakeYourChoiseMenu(true);
-                    CombineAssets(displayList, chooseDbFunc, index - 1);
-                }
-                else if (input == "0")
-                {
-                    ClearOutputScreen();
-                    return 0;
-                }
-                else
-                {
-                    try
-                    {
-                        assetNumber = Int32.Parse(input);
-                    }
-                    catch (FormatException)
-                    {
-                        PrintOutputPos(RED, $"{input} is not a number", POSX4 + 1, POSY4 + 1);
-                        CombineAssets(displayList, chooseDbFunc, index);
-                    }
+        //        if (input.ToUpper() == "Q")
+        //        {
+        //            DbQuerys.QuitProgram(0);
+        //        }
+        //        else if (input.ToUpper() == "N")
+        //        {
+        //            ClearOutputScreen();
+        //            ShowMakeYourChoiseMenu(false);
+        //            ShowMakeYourChoiseMenu(true);
+        //            CombineAssets(displayList, chooseDbFunc, index);
+        //        }
+        //        else if (input.ToUpper() == "P")
+        //        {
+        //            ClearOutputScreen();
+        //            ShowMakeYourChoiseMenu(false);
+        //            ShowMakeYourChoiseMenu(true);
+        //            CombineAssets(displayList, chooseDbFunc, index - 1);
+        //        }
+        //        else if (input == "0")
+        //        {
+        //            ClearOutputScreen();
+        //            return 0;
+        //        }
+        //        else
+        //        {
+        //            try
+        //            {
+        //                assetNumber = Int32.Parse(input);
+        //            }
+        //            catch (FormatException)
+        //            {
+        //                PrintOutputPos(RED, $"{input} is not a number", POSX4 + 1, POSY4 + 1);
+        //                CombineAssets(displayList, chooseDbFunc, index);
+        //            }
 
-                    if (assetNumber > 0 && assetNumber <= sumOfComputerPhones)
-                    {
-                        if (chooseDbFunc == 1)
-                        {
-                            ClearInfoMenuTitle();
-                            ClearOutputScreen();
-                            asset = DbQuerys.UpdateRecordInDb(STOREOUTPUTLIST.GetRange(assetNumber - 1, 1));
-                            ShowSubMenuCollectToUpdateDb(GREEN, asset);
-                        }
-                        else if (chooseDbFunc == 2)
-                        {
-                            ClearOutputScreen();
-                            ClearInfoMenuTitle();
-                            int deleted = DbQuerys.DeleteRecordInDb(STOREOUTPUTLIST.GetRange(assetNumber - 1, 1));
-                            if (deleted > 0)
-                            {
-                                PrintOutputPos(GREEN, "Delete successful", POSX4 + 1, POSY4 + 1);
-                                Thread.Sleep(MILLISECONDS);
-                                ClearInfoMenu();
-                            }
-                            else
-                            {
-                                PrintOutputPos(RED, "Delete faild", POSX4 + 1, POSY4 + 1);
-                                Thread.Sleep(MILLISECONDS);
-                                ClearInfoMenu();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        PrintOutputPos(RED, $"{assetNumber} is not within index number", POSX4 + 1, POSY4 + 1);
-                        CombineAssets(displayList, chooseDbFunc, index);
-                    }
+        //            if (assetNumber > 0 && assetNumber <= sumOfComputerPhones)
+        //            {
+        //                if (chooseDbFunc == 1)
+        //                {
+        //                    ClearInfoMenuTitle();
+        //                    ClearOutputScreen();
+        //                    asset = DbQuerys.UpdateRecordInDb(STOREOUTPUTLIST.GetRange(assetNumber - 1, 1));
+        //                    ShowSubMenuCollectToUpdateDb(GREEN, asset);
+        //                }
+        //                else if (chooseDbFunc == 2)
+        //                {
+        //                    ClearOutputScreen();
+        //                    ClearInfoMenuTitle();
+        //                    int deleted = DbQuerys.DeleteRecordInDb(STOREOUTPUTLIST.GetRange(assetNumber - 1, 1));
+        //                    if (deleted > 0)
+        //                    {
+        //                        PrintOutputPos(GREEN, "Delete successful", POSX4 + 1, POSY4 + 1);
+        //                        Thread.Sleep(MILLISECONDS);
+        //                        ClearInfoMenu();
+        //                    }
+        //                    else
+        //                    {
+        //                        PrintOutputPos(RED, "Delete faild", POSX4 + 1, POSY4 + 1);
+        //                        Thread.Sleep(MILLISECONDS);
+        //                        ClearInfoMenu();
+        //                    }
+        //                }
+        //            }
+        //            else
+        //            {
+        //                PrintOutputPos(RED, $"{assetNumber} is not within index number", POSX4 + 1, POSY4 + 1);
+        //                CombineAssets(displayList, chooseDbFunc, index);
+        //            }
 
-                }
-                ShowMakeYourChoiseMenu(false);
-                ShowMakeYourChoiseMenu(true);
-            }
-            return 0;
-        }
+        //        }
+        //        ShowMakeYourChoiseMenu(false);
+        //        ShowMakeYourChoiseMenu(true);
+        //    }
+        //    return 0;
+        //}
 
         public int PrintoutAssets(List<Display> displayList, int index)
         {
