@@ -28,7 +28,7 @@ namespace EFAssetTrackingDb
             ModelBuilder.Entity<Office>().HasData(new Office { Id = 2, HQId = 2, OfficeName = "Zoo Kontoret", OfficeCountry = "Denmark" });
             ModelBuilder.Entity<Office>().HasData(new Office { Id = 3, HQId = 2, OfficeName = "Sisak Ured", OfficeCountry = "Kroatien" });
             ModelBuilder.Entity<Office>().HasData(new Office { Id = 4, HQId = 1, OfficeName = "Oslo Kontoret", OfficeCountry = "Norge" });
-            ModelBuilder.Entity<Office>().HasData(new Office { Id = 5, HQId = 1, OfficeName = "Helsinki Toimisto", OfficeCountry = "Norge" });
+            ModelBuilder.Entity<Office>().HasData(new Office { Id = 5, HQId = 1, OfficeName = "Helsinki", OfficeCountry = "Finland" });
 
             // Computers
             ModelBuilder.Entity<Computer>().HasData(new Computer { 
